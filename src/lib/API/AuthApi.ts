@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
-import type { LoginRequest, TokenSet } from '$lib/interfaces/Interfaces';
+import type { LoginRequest, RegisterRequest, TokenSet } from '$lib/interfaces/Interfaces';
 import Cookies from 'js-cookie';
 import { redirect } from '@sveltejs/kit';
 
@@ -55,14 +55,18 @@ export class AuthApi {
 	}
 
 	public static async login(body: LoginRequest) {
-		const response = await this.api.post('login', body);
+		const response = await this.api.post('api/auth/login', body);
+
+		return response.data;
+	}
+
+	public static async register(body: RegisterRequest) {
+		const response = await this.api.post('api/auth/register', body);
 		Cookies.set('access_token', response.data.accessToken, {
 			expires: 1,
-			secure: process.env.NODE_ENV === 'production'
 		});
 		Cookies.set('refresh_token', response.data.refreshToken, {
 			expires: 7,
-			secure: process.env.NODE_ENV === 'production'
 		});
 		return response.data;
 	}
@@ -70,10 +74,12 @@ export class AuthApi {
 
 	public static async getUserDetails() {
 		try {
-			const response = await this.api.get('me');
+			console.log("ADASDAAAA")
+			console.log(Cookies.get())
+			const response = await this.api.get('/api/auth/me', {headers: {Authorization: `Bearer ${Cookies.get('access_token')}`}});
 			return response.data;
 		} catch (error) {
-			console.error('Failed to fetch user details:', error);
+			// console.error('Failed to fetch user details:', error);
 			return null;
 		}
 	}

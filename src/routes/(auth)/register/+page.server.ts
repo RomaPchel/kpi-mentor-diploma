@@ -8,27 +8,28 @@ export const actions = {
 
 		const email = data.get('email') as string;
 		const password = data.get('password') as string;
+		const firstName = data.get('firstName') as string;
+		const lastName = data.get('lastName') as string;
 
-		const response: TokenSet = await AuthApi.login({ email, password });
+		const response: TokenSet = await AuthApi.register({ email, password, firstName, lastName });
 
 		if (response) {
-			const accessToken = response.accessToken;
-			const refreshToken = response.refreshToken;
-			cookies.set('access_token', accessToken, {
+			locals.accessToken = response.accessToken;
+			locals.refreshToken = response.refreshToken;
+			locals.isAuthenticated = true;
+
+			cookies.set('access_token', response.accessToken, {
 				path: '/',
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				maxAge: 60 * 60 * 24
 			});
-			cookies.set('refresh_token', refreshToken, {
+			cookies.set('refresh_token', response.refreshToken, {
 				path: '/',
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				maxAge: 60 * 60 * 24 * 7
 			});
-			locals.accessToken = accessToken;
-			locals.refreshToken = refreshToken;
-			locals.isAuthenticated = true;
 
 			throw redirect(303, '/dashboard');
 		}

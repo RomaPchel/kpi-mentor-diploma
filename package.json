@@ -34,7 +34,6 @@
 		"@inlang/paraglide-sveltekit": "^0.15.5",
 		"axios": "^1.7.9",
 		"js-cookie": "^3.0.5",
-		"js-cookies": "^1.0.4",
 		"jsonwebtoken": "^9.0.2"
 	}
 }

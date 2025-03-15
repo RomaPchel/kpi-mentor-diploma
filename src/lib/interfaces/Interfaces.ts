@@ -8,6 +8,14 @@ export interface LoginRequest {
 	password: string;
 }
 
+export interface RegisterRequest {
+	email: string;
+	password: string;
+	firstName: string;
+	lastName: string;
+}
+
+
 export interface User {
 	uuid: string;
 	role: string;
