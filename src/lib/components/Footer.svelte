@@ -3,14 +3,15 @@
 </footer>
 
 <style>
-    footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        padding: 1rem;
-        background-color: #f8f8f8;
-        box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
-    }
+   footer {
+       background-color: #f8f8f8;
+       position: fixed;
+       right: 0;
+       bottom: 0;
+       text-align: center;
+       width: 100%;
+       font-size: 19px;
+       font-weight: bold;
+       color: #000000;
+   }
 </style>

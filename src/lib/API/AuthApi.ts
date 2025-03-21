@@ -74,12 +74,9 @@ export class AuthApi {
 
 	public static async getUserDetails() {
 		try {
-			console.log("ADASDAAAA")
-			console.log(Cookies.get())
 			const response = await this.api.get('/api/auth/me', {headers: {Authorization: `Bearer ${Cookies.get('access_token')}`}});
 			return response.data;
 		} catch (error) {
-			// console.error('Failed to fetch user details:', error);
 			return null;
 		}
 	}
