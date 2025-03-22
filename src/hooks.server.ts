@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Try to refresh the token if needed
 	if (!token && refreshToken) {
 		try {
-			const refreshResponse = await fetch(`http:localhost:3000/api/auth/refresh/${refreshToken}`, {
+			const refreshResponse = await fetch(`https://2e28-176-37-189-48.ngrok-free.app/api/auth/refresh/${refreshToken}`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json'
@@ -41,7 +41,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Fetch user data if token exists and store in locals
 	if (token) {
 		try {
-			const userResponse = await fetch('http://localhost:3000/api/auth/me', {
+			const userResponse = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/auth/me', {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}

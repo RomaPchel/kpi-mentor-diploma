@@ -2,7 +2,7 @@ import type { Chat, ChatMessage, ChatPreview } from '$lib/interfaces/Interfaces'
 import { io, Socket } from 'socket.io-client';
 
 export default class ChatApi {
-	private static readonly AUTH_API_BASE_URL = 'http://localhost:3000/';
+	private static readonly AUTH_API_BASE_URL = 'https://2e28-176-37-189-48.ngrok-free.app';
 	private static socket: Socket | null = null;
 	private static messageListeners: Map<string, (message: any) => void> = new Map();
 	private static connectionAttempts = 0;

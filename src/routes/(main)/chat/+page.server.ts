@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ parent, cookies, fetch, locals }) =
 	}
 
 	try {
-		const chatsResponse = await fetch('http://localhost:3000/api/chat', {
+		const chatsResponse = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/chat', {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${accessToken}`

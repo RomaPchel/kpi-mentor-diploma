@@ -9,7 +9,7 @@ export const actions = {
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
 
-		const response = await fetch('http://localhost:3000/api/auth/register', {
+		const response = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/auth/register', {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
