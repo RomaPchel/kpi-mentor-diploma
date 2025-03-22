@@ -1,9 +1,5 @@
 <script lang="ts">
-	import type {
-		PageServerData,
-	} from '../../../../.svelte-kit/types/src/routes/(main)/dashboard/$types.js';
 
-	let { data }: PageServerData = $props();
 </script>
 
 <main>
