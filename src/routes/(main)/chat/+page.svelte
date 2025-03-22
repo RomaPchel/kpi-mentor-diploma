@@ -1,17 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { ChatPreview } from '$lib/interfaces/Interfaces';
+	import type { ChatMessage, ChatPreview } from '$lib/interfaces/Interfaces';
 	import ChatOverview from '$lib/components/ChatOverview.svelte';
 
-	let showChat = $state(false)
+
+	let showChat = $state(false);
 	const { data } = $props();
 
+	// Set up reactive state
 	let chats = $state(data.chats || []);
-	let activeChat = $state(chats[0])
+	let activeChat = $state<ChatPreview | null>(null);
 	let searchQuery = $state('');
-	let filteredChats = $state(chats);
+	let filteredChats = $state(data.chats);
 	let mobileView = $state(false);
 
+	// Update filtered chats based on search query
 	function updateFilteredChats() {
 		if (!searchQuery.trim()) {
 			filteredChats = chats;
@@ -30,17 +33,34 @@
 		}
 	}
 
+	// Handle chat selection
 	async function selectChat(chat: ChatPreview) {
-		if (!chat || !chat.uuid) {
-			return;
+		if (activeChat?.uuid === chat.uuid) {
+			return; // Already selected
 		}
-		showChat = true;
+
 		activeChat = chat;
-		
+
+		// Reset unread count for this chat and mark as read on server
+		const chatIndex = chats.findIndex(c => c.uuid === chat.uuid);
+		if (chatIndex >= 0) {
+			chats[chatIndex].unreadCount = 0;
+			// Force update of filtered chats
+			updateFilteredChats();
+
+			// Mark messages as read on the server
+		}
+
+		// Show chat on mobile
+		showChat = true;
+
+		// Update mobile view state if needed
 		if (window.innerWidth < 768) {
 			mobileView = true;
 		}
 	}
+
+	// Handle incoming messages to update chat list
 
 	function backToList() {
 		mobileView = false;
@@ -51,7 +71,7 @@
 		const messageDate = new Date(date);
 		const now = new Date();
 		const diffDays = Math.floor((now.getTime() - messageDate.getTime()) / (1000 * 3600 * 24));
-		
+
 		if (diffDays === 0) {
 			return new Intl.DateTimeFormat('en', {
 				hour: 'numeric',
@@ -61,30 +81,44 @@
 		} else if (diffDays < 7) {
 			return new Intl.DateTimeFormat('en', { weekday: 'short' }).format(messageDate);
 		} else {
-			return new Intl.DateTimeFormat('en', { 
+			return new Intl.DateTimeFormat('en', {
 				month: 'short',
 				day: 'numeric'
 			}).format(messageDate);
 		}
 	}
 
+	function getInitials(user: any): string {
+		if (!user) return '?';
+		return `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`;
+	}
 
-	$effect(()=>{
-		updateFilteredChats()
-	})
-
-	onMount(() => {
+	$effect(() => {
 		updateFilteredChats();
-		
+	});
+
+	onMount(async () => {
+		// Initialize chat client with user ID
+
+		// Register message listener
+
+		// Select the first chat if available
+		if (filteredChats.length > 0 && !activeChat) {
+			await selectChat(filteredChats[0]);
+		}
+
+
 		const handleResize = () => {
 			if (window.innerWidth >= 768) {
 				mobileView = false;
 			}
 		};
-		
+
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	});
+
+
 </script>
 
 <div class="chat-container">
@@ -118,17 +152,18 @@
 					</div>
 				{:else}
 					{#each filteredChats as chat (chat.uuid)}
-						<div 
-							class="chat-item" 
+						<div
+							class="chat-item"
 							class:active={activeChat && activeChat.uuid === chat.uuid}
 							onclick={() => selectChat(chat)}
 						>
-<!--							<div class="avatar">-->
-<!--								{chat.otherUser?.avatar ? -->
-<!--									<img src={chat.otherUser.avatar} alt="Profile" /> : -->
-<!--									<div class="avatar-placeholder">{getInitials(chat.otherUser)}</div>-->
-<!--								}-->
-<!--							</div>-->
+							<div class="avatar">
+								{#if chat.otherUser?.avatar}
+									<img src={chat.otherUser.avatar} alt="Profile" />
+								{:else}
+									<div class="avatar-placeholder">{getInitials(chat.otherUser)}</div>
+								{/if}
+							</div>
 							<div class="chat-info">
 								<div class="chat-header">
 									<h3>{chat.otherUser ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}` : 'Unknown User'}</h3>
@@ -187,7 +222,7 @@
 		flex-direction: column;
 		background-color: #f8fafc;
 	}
-	
+
 	.chat-layout {
 		flex: 1;
 		display: flex;
@@ -198,7 +233,7 @@
 		background-color: white;
 		height: calc(100vh - 32px);
 	}
-	
+
 	.chat-sidebar {
 		width: 320px;
 		display: flex;
@@ -206,36 +241,36 @@
 		border-right: 1px solid #e5e7eb;
 		background-color: white;
 	}
-	
+
 	.chat-list-header {
 		padding: 20px;
 		border-bottom: 1px solid #e5e7eb;
 	}
-	
+
 	.chat-list-header h1 {
 		margin: 0;
 		font-size: 1.5rem;
 		font-weight: 600;
 		color: #374151;
 	}
-	
+
 	.search-container {
 		padding: 12px 16px;
 		border-bottom: 1px solid #e5e7eb;
 	}
-	
+
 	.search-input-wrapper {
 		position: relative;
 		display: flex;
 		align-items: center;
 	}
-	
+
 	.search-input-wrapper svg {
 		position: absolute;
 		left: 12px;
 		color: #6b7280;
 	}
-	
+
 	.search-container input {
 		width: 100%;
 		padding: 10px 10px 10px 40px;
@@ -246,18 +281,18 @@
 		transition: border-color 0.2s;
 		background-color: #f1f5f9;
 	}
-	
+
 	.search-container input:focus {
 		border-color: #3b82f6;
 		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 	}
-	
+
 	.chat-list {
 		flex: 1;
 		overflow-y: auto;
 		padding: 8px 0;
 	}
-	
+
 	.empty-state {
 		display: flex;
 		flex-direction: column;
@@ -267,12 +302,12 @@
 		padding: 32px;
 		color: #6b7280;
 	}
-	
+
 	.empty-state svg {
 		margin-bottom: 16px;
 		color: #9ca3af;
 	}
-	
+
 	.chat-item {
 		display: flex;
 		align-items: center;
@@ -282,16 +317,16 @@
 		transition: background-color 0.2s;
 		position: relative;
 	}
-	
+
 	.chat-item:hover {
 		background-color: #f1f5f9;
 	}
-	
+
 	.chat-item.active {
 		background-color: #ebf5ff;
 		border-left-color: #3b82f6;
 	}
-	
+
 	.avatar {
 		width: 48px;
 		height: 48px;
@@ -300,13 +335,13 @@
 		overflow: hidden;
 		flex-shrink: 0;
 	}
-	
+
 	.avatar img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
-	
+
 	.avatar-placeholder {
 		width: 100%;
 		height: 100%;
@@ -318,19 +353,19 @@
 		font-weight: 600;
 		font-size: 1rem;
 	}
-	
+
 	.chat-info {
 		flex: 1;
 		min-width: 0;
 	}
-	
+
 	.chat-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
 		margin-bottom: 4px;
 	}
-	
+
 	.chat-header h3 {
 		margin: 0;
 		font-size: 0.9375rem;
@@ -340,13 +375,13 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	
+
 	.timestamp {
 		font-size: 0.75rem;
 		color: #6b7280;
 		flex-shrink: 0;
 	}
-	
+
 	.preview-message {
 		margin: 0;
 		font-size: 0.875rem;
@@ -356,7 +391,7 @@
 		text-overflow: ellipsis;
 		max-width: 205px;
 	}
-	
+
 	.unread-badge {
 		position: absolute;
 		top: 12px;
@@ -373,7 +408,7 @@
 		justify-content: center;
 		padding: 0 6px;
 	}
-	
+
 	.chat-main-content {
 		flex: 1;
 		display: flex;
@@ -381,14 +416,14 @@
 		background-color: white;
 		position: relative;
 	}
-	
+
 	.mobile-header {
 		padding: 12px;
 		display: flex;
 		align-items: center;
 		border-bottom: 1px solid #e5e7eb;
 	}
-	
+
 	.back-button {
 		background: none;
 		border: none;
@@ -396,7 +431,7 @@
 		padding: 4px;
 		color: #374151;
 	}
-	
+
 	.no-chat-selected {
 		flex: 1;
 		display: flex;
@@ -407,7 +442,7 @@
 		color: #6b7280;
 		text-align: center;
 	}
-	
+
 	.empty-chat-icon {
 		margin-bottom: 24px;
 		color: #9ca3af;
@@ -419,21 +454,21 @@
 		align-items: center;
 		justify-content: center;
 	}
-	
+
 	.no-chat-selected h2 {
 		margin: 0 0 8px;
 		font-size: 1.5rem;
 		font-weight: 600;
 		color: #374151;
 	}
-	
+
 	.no-chat-selected p {
 		margin: 0;
 		font-size: 1rem;
 		color: #6b7280;
 		max-width: 300px;
 	}
-	
+
 	/* Responsive design */
 	@media (max-width: 767px) {
 		.chat-layout {
@@ -441,17 +476,17 @@
 			height: 100vh;
 			border-radius: 0;
 		}
-		
+
 		.chat-sidebar {
 			flex: 1;
 			width: 100%;
 		}
-		
+
 		.chat-main-content {
 			flex: 1;
 			width: 100%;
 		}
-		
+
 		.hidden {
 			display: none;
 		}

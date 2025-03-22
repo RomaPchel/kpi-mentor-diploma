@@ -1,6 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import { AuthApi } from '$lib/API/AuthApi';
-import type { TokenSet } from '$lib/interfaces/Interfaces';
 
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
@@ -11,20 +9,27 @@ export const actions = {
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
 
-		const response: TokenSet = await AuthApi.register({ email, password, firstName, lastName });
+		const response = await fetch('http://localhost:3000/api/auth/register', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: email, password: password, firstName: firstName, lastName: lastName }),
+		});
 
 		if (response) {
-			locals.accessToken = response.accessToken;
-			locals.refreshToken = response.refreshToken;
+			const body = await response.json();
+			locals.accessToken = body.accessToken;
+			locals.refreshToken = body.refreshToken;
 			locals.isAuthenticated = true;
 
-			cookies.set('access_token', response.accessToken, {
+			cookies.set('access_token', body.accessToken, {
 				path: '/',
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				maxAge: 60 * 60 * 24
 			});
-			cookies.set('refresh_token', response.refreshToken, {
+			cookies.set('refresh_token', body.refreshToken, {
 				path: '/',
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',

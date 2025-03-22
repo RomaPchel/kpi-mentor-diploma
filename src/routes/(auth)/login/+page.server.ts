@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import { AuthApi } from '$lib/API/AuthApi';
 import type { TokenSet } from '$lib/interfaces/Interfaces';
 
 export const actions = {
@@ -9,11 +8,21 @@ export const actions = {
 		const email = data.get('email') as string;
 		const password = data.get('password') as string;
 
-		const response: TokenSet = await AuthApi.login({ email, password });
+		console.log(JSON.stringify({ email: email, password: password }));
+
+		const response = await fetch('http://localhost:3000/api/auth/login', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: email, password: password })
+		});
 
 		if (response) {
-			const accessToken = response.accessToken;
-			const refreshToken = response.refreshToken;
+			const body = await response.json();
+			console.log(body);
+			const accessToken = body.accessToken;
+			const refreshToken = body.refreshToken;
 			cookies.set('access_token', accessToken, {
 				path: '/',
 				httpOnly: true,

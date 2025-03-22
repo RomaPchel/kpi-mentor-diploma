@@ -11,6 +11,7 @@ declare global {
 			accessToken: string,
 			refreshToken: string,
 			isAuthenticated: boolean,
+			getClientAddress: () => string,
 		}
 		// interface PageData {}
 		// interface PageState {}
