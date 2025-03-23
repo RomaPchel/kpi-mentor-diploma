@@ -6,8 +6,8 @@
 	let {activeChat, sender} = $props()
 
 	// Reactive state
-	let messages: ChatMessage[] = activeChat?.messages ?? [];
-	let messageInput = '';
+	let messages: ChatMessage[] = $state(activeChat?.messages ?? []);
+	let messageInput = $state('');
 	let messagesContainer: HTMLElement;
 	let removeMessageListener: () => void;
 
