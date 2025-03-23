@@ -1,8 +1,9 @@
 import type { Chat, ChatMessage, ChatPreview } from '$lib/interfaces/Interfaces';
 import { io, Socket } from 'socket.io-client';
+import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export default class ChatApi {
-	private static readonly AUTH_API_BASE_URL = 'https://2e28-176-37-189-48.ngrok-free.app';
+	private static readonly AUTH_API_BASE_URL = PUBLIC_SERVER_URL;
 	private static socket: Socket | null = null;
 	private static messageListeners: Map<string, (message: any) => void> = new Map();
 	private static connectionAttempts = 0;
@@ -78,7 +79,6 @@ export default class ChatApi {
 				this.isConnecting = false;
 			});
 
-			// Listen for messages and dispatch them to all registered listeners
 			this.socket.on('message', (data: any) => {
 				console.log('Received message via socket:', data);
 				this.messageListeners.forEach((callback) => {
@@ -91,7 +91,6 @@ export default class ChatApi {
 		}
 	}
 
-	// Helper method that waits for the socket to connect.
 	private static waitForConnection(timeout = 5000): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (this.socket && this.socket.connected) {
@@ -139,7 +138,6 @@ export default class ChatApi {
 			return null;
 		}
 
-		// Ensure socket is connected before sending
 		if (!this.socket || !this.socket.connected) {
 			console.log('Socket not connected, attempting to initialize...');
 			this.initializeSocket(senderUuid, this.accessToken);
@@ -159,15 +157,13 @@ export default class ChatApi {
 				recipientId: chat.otherUser?.uuid
 			};
 
-			// Emit message via socket
 			this.socket.emit('message', messageData);
 			console.log('Message sent via socket');
 
-			// Return a temporary message object for immediate UI update
 			return {
 				uuid: crypto.randomUUID(),
 				content: messageData.content,
-				sender: messageData.senderId,
+				sender: { uuid: messageData.senderId },
 				chat: messageData.chatId,
 				createdAt: new Date(),
 				updatedAt: new Date()

@@ -78,6 +78,7 @@
 		try {
 			// Assume activeChat.otherUser holds the recipient info
 			const sentMessage = await ChatApi.sendMessage(activeChat, content, currentUser.uuid);
+			console.log(sentMessage);
 			if (sentMessage) {
 				// Replace the temporary message with the confirmed message
 				messages = messages.map(m => m.uuid === tempMessage.uuid ? sentMessage : m);
@@ -91,7 +92,6 @@
 		}
 	}
 
-	console.log(messages)
 
 	// Update messages when activeChat changes
 	$effect(() => {

@@ -1,7 +1,8 @@
 import { type Handle, redirect } from '@sveltejs/kit';
+import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	console.log(event.url.pathname)
+	console.log(event.url.pathname);
 	if (event.url.pathname === '/login') {
 		return resolve(event);
 	}
@@ -9,19 +10,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
 
-	if (!token && !refreshToken){
-		throw redirect(307, '/login')
+	if (!token && !refreshToken) {
+		throw redirect(307, '/login');
 	}
 
-	// Try to refresh the token if needed
 	if (!token && refreshToken) {
 		try {
-			const refreshResponse = await fetch(`https://2e28-176-37-189-48.ngrok-free.app/api/auth/refresh/${refreshToken}`, {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-			});
+			const refreshResponse = await fetch(
+				`${PUBLIC_SERVER_URL}/api/auth/refresh/${refreshToken}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				}
+			);
 
 			if (refreshResponse.ok) {
 				const data = await refreshResponse.json();
@@ -41,15 +44,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Fetch user data if token exists and store in locals
 	if (token) {
 		try {
-			const userResponse = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/auth/me', {
+			const userResponse = await fetch(`${PUBLIC_SERVER_URL}/api/auth/me`, {
 				headers: {
-					'Authorization': `Bearer ${token}`
+					Authorization: `Bearer ${token}`
 				}
 			});
-			
+
 			if (userResponse.ok) {
-				const userData = await userResponse.json();
-				event.locals.user = userData;
+				event.locals.user = await userResponse.json();
 				event.locals.accessToken = token;
 				event.locals.refreshToken = refreshToken || '';
 				event.locals.isAuthenticated = true;
@@ -58,20 +60,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			console.error('Error fetching user data:', error);
 		}
 	}
-
-	// Add custom getClientAddress function
-	event.locals.getClientAddress = () => {
-		const forwarded = event.request.headers.get('x-forwarded-for');
-		const realIp = event.request.headers.get('x-real-ip');
-		
-		const ip = forwarded 
-			? forwarded.split(',')[0].trim() 
-			: realIp 
-				? realIp 
-				: event.getClientAddress();
-				
-		return ip;
-	};
 
 	return resolve(event);
 };

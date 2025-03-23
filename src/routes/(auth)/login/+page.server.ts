@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import type { TokenSet } from '$lib/interfaces/Interfaces';
+import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
@@ -10,7 +10,7 @@ export const actions = {
 
 		console.log(JSON.stringify({ email: email, password: password }));
 
-		const response = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/auth/login', {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/auth/login`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",

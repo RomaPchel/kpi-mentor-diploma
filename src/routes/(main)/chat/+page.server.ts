@@ -1,6 +1,7 @@
 import type { ChatPreview } from '$lib/interfaces/Interfaces';
 import type { PageServerLoad } from './$types';
 import ChatApi from '$lib/API/ChatApi';
+import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 
 export const load: PageServerLoad = async ({ parent, cookies, fetch, locals }) => {
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({ parent, cookies, fetch, locals }) =
 	}
 
 	try {
-		const chatsResponse = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/chat', {
+		const chatsResponse = await fetch(`${PUBLIC_SERVER_URL}/api/chat`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${accessToken}`

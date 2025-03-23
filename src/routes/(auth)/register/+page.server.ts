@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
@@ -9,7 +10,7 @@ export const actions = {
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
 
-		const response = await fetch('https://2e28-176-37-189-48.ngrok-free.app/api/auth/register', {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/auth/register`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
