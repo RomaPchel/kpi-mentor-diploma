@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type { Chat, ChatMessage, User } from '$lib/interfaces/Interfaces';
+	import type {, ChatMessage } from '$lib/interfaces/Interfaces';
 	import ChatApi from '$lib/API/ChatApi';
 
-	export let activeChat: Chat | null;
-	export let sender: User;
+	let {activeChat, sender} = $props()
 
 	// Reactive state
 	let messages: ChatMessage[] = activeChat?.messages ?? [];
