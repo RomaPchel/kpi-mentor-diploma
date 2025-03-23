@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type {, ChatMessage } from '$lib/interfaces/Interfaces';
+	import type {ChatMessage } from '$lib/interfaces/Interfaces';
 	import ChatApi from '$lib/API/ChatApi';
 
 	let {activeChat, sender} = $props()
