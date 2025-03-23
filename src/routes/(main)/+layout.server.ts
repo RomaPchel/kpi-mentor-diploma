@@ -1,6 +1,7 @@
 import type { LayoutServerLoad } from '../../../.svelte-kit/types/src/routes/(main)/$types.js';
 import ChatApi from '$lib/API/ChatApi.js';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
+import { redirect } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({cookies}) => {
 	try {
@@ -18,7 +19,7 @@ export const load: LayoutServerLoad = async ({cookies}) => {
 			user: user
 		};
 	}catch (e) {
-		console.error(e);
+		throw redirect(307, '/login');
 	}
 
 };

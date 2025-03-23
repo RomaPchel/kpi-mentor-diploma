@@ -50,7 +50,9 @@ export interface ChatUser {
 export interface ChatMessage {
 	uuid: string
 	content: string;
-	sender: User;
+	sender: {
+		uuid: string;
+	};
 	chat: Chat;
 	createdAt: Date;
 	updatedAt: Date;

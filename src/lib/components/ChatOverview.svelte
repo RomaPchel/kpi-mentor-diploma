@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { onMount, onDestroy} from 'svelte';
-	import type { ChatMessage, User } from '$lib/interfaces/Interfaces';
+	import { onMount, onDestroy } from 'svelte';
+	import type { Chat, ChatMessage, User } from '$lib/interfaces/Interfaces';
 	import ChatApi from '$lib/API/ChatApi';
 
-	// Get activeChat and sender from parent component via $props()
-	let { activeChat, sender } = $props();
+	export let activeChat: Chat | null;
+	export let sender: User;
 
-	// Reactive state: initialize messages from activeChat.messages if available.
-	let messages = $state(activeChat?.messages || []);
-	let messageInput = $state('');
-	let currentUser: User = sender;
+	// Reactive state
+	let messages: ChatMessage[] = activeChat?.messages ?? [];
+	let messageInput = '';
 	let messagesContainer: HTMLElement;
 	let removeMessageListener: () => void;
 
@@ -23,20 +22,28 @@
 		}).format(dt);
 	}
 
+	// Scroll to bottom of the messages container
+	function scrollToBottom() {
+		if (messagesContainer) {
+			setTimeout(() => {
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			}, 100);
+		}
+	}
+
 	// Handler for incoming socket messages
 	function handleIncomingMessage(data: any) {
 		console.log('Received live message:', data);
-		// Check that the message belongs to the active chat
+		// Only process if this message belongs to the active chat
 		if (activeChat && data.chatId === activeChat.uuid) {
-			// Transform data into ChatMessage shape if needed.
-			// For example, if data.sender is a string (ID), convert it to an object:
+			// Normalize the sender to an object (if it’s a string)
 			const transformedMessage: ChatMessage = {
 				uuid: data.uuid,
 				content: data.content,
-				sender: data.senderId,
+				sender: typeof data.sender === 'string' ? { uuid: data.sender } : data.sender,
 				chat: activeChat,
-				createdAt: new Date(),
-				updatedAt: new Date()
+				createdAt: new Date(data.createdAt || Date.now()),
+				updatedAt: new Date(data.updatedAt || Date.now())
 			};
 
 			// Avoid adding duplicate messages
@@ -47,51 +54,39 @@
 		}
 	}
 
-	// Scroll to bottom of the messages container
-	function scrollToBottom() {
-		if (messagesContainer) {
-			setTimeout(() => {
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;
-			}, 100);
-		}
-	}
-
-	// Send a message: add a temporary message to UI, then call ChatApi.sendMessage.
+	// Send a message: add a temporary message then call ChatApi.sendMessage
 	async function sendMessage() {
-		if (!messageInput.trim() || !activeChat || !currentUser) return;
+		if (!messageInput.trim() || !activeChat || !sender) return;
 		const content = messageInput.trim();
 		messageInput = '';
 
 		const tempMessage: ChatMessage = {
 			uuid: crypto.randomUUID(),
 			content,
-			sender: currentUser,
+			sender,
 			chat: activeChat,
 			createdAt: new Date(),
 			updatedAt: new Date()
 		};
 
-		// Immediately update UI with the temporary message
 		messages = [...messages, tempMessage];
 		scrollToBottom();
 
 		try {
-			// Assume activeChat.otherUser holds the recipient info
-			const sentMessage = await ChatApi.sendMessage(activeChat, content, currentUser.uuid);
-			console.log(sentMessage);
+			const sentMessage = await ChatApi.sendMessage(activeChat, content, sender.uuid);
+			console.log('Sent message:', sentMessage);
 			if (sentMessage) {
 				// Replace the temporary message with the confirmed message
 				messages = messages.map(m => m.uuid === tempMessage.uuid ? sentMessage : m);
 			}
 		} catch (error) {
 			console.error('Error sending message:', error);
-			// Optionally update the temporary message to indicate failure
+			// Optionally, mark the temporary message as failed
 			messages = messages.map(m =>
 				m.uuid === tempMessage.uuid ? { ...m, content: m.content + ' (Failed to send)' } : m
 			);
 		}
 	}
-
 
 	// Update messages when activeChat changes
 	$effect(() => {
@@ -126,7 +121,7 @@
 					<p class="empty-chat">No messages in this chat. Start the conversation!</p>
 				{:else}
 					{#each messages as message (message.uuid)}
-						<div class="message-wrapper {message.sender.uuid === currentUser.uuid ? 'sent' : 'received'}">
+						<div class="message-wrapper {message.sender.uuid === sender.uuid ? 'sent' : 'received'}">
 							<div class="message">
 								<p>{message.content}</p>
 								<span class="message-time">{formatTime(message.createdAt)}</span>
@@ -136,17 +131,19 @@
 				{/if}
 			</div>
 			<div class="message-input-container">
-        <textarea
+				<textarea
 					placeholder="Type a message..."
 					bind:value={messageInput}
-					onkeydown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
+					on:keydown={(e) => {
+						if (e.key === 'Enter' && !e.shiftKey) {
+							e.preventDefault();
+							sendMessage();
+						}
+					}}
 				></textarea>
-				<button onclick={sendMessage} disabled={!messageInput.trim()}>Send</button>
+				<button on:click={sendMessage} disabled={!messageInput.trim()}>
+					Send
+				</button>
 			</div>
 		</div>
 	{:else}
