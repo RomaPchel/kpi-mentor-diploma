@@ -3,7 +3,7 @@ import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	console.log(event.url.pathname);
-	if (event.url.pathname === '/login') {
+	if (event.url.pathname === '/login' || event.url.pathname === '/register') {
 		return resolve(event);
 	}
 
