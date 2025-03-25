@@ -21,6 +21,7 @@ export interface User {
 	role: string;
 	email: string;
 	avatar: string;
+	isMentor: boolean;
 	firstName?: string;
 	lastName?: string;
 }

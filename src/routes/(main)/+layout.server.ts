@@ -12,7 +12,6 @@ export const load: LayoutServerLoad = async ({cookies}) => {
 		});
 
 		const user = await res.json();
-		ChatApi.initializeSocket(user.uuid, cookies.get('access_token') as string);
 
 		return {
 			isLoggedIn: !!user,

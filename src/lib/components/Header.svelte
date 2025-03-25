@@ -18,7 +18,10 @@
 					<a href="/login">Login</a>
 					<a href="/register">Register</a>
 				{/if}
-				<a href="/become-mentor">Become a Mentor</a>
+				{#if user.role !== 'mentor'}
+					<a href="/mentorship/become-mentor">Become a Mentor</a>
+					<a href="/mentorship/find-mentor">Find a Mentor</a>
+				{/if}
 				<a href="/chat">Chat</a>
 			</nav>
 			
