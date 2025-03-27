@@ -8,7 +8,6 @@ export const actions = {
 		const email = data.get('email') as string;
 		const password = data.get('password') as string;
 
-		console.log(JSON.stringify({ email: email, password: password }));
 
 		const response = await fetch(`${PUBLIC_SERVER_URL}/api/auth/login`, {
 			method: 'POST',
@@ -20,7 +19,7 @@ export const actions = {
 
 		if (response) {
 			const body = await response.json();
-			console.log(body);
+
 			const accessToken = body.accessToken;
 			const refreshToken = body.refreshToken;
 			cookies.set('access_token', accessToken, {
