@@ -18,7 +18,7 @@ export const load: LayoutServerLoad = async ({cookies}) => {
 			user: user
 		};
 	}catch (e) {
-		throw redirect(307, '/login');
+		throw redirect(307, '/welcome');
 	}
 
 };

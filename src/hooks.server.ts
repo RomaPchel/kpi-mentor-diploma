@@ -2,8 +2,8 @@ import { type Handle, redirect } from '@sveltejs/kit';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	console.log(event.url.pathname);
-	if (event.url.pathname === '/login' || event.url.pathname === '/register') {
+	console.log(event);
+	if (event.url.pathname === '/login' || event.url.pathname === '/register' || event.url.pathname === '/') {
 		return resolve(event);
 	}
 
@@ -11,7 +11,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const refreshToken = event.cookies.get('refresh_token');
 
 	if (!token && !refreshToken) {
-		throw redirect(307, '/login');
+		throw redirect(307, '/');
 	}
 
 	if (!token && refreshToken) {

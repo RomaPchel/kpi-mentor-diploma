@@ -19,7 +19,7 @@
 				<!-- Chat button placed to the left of the avatar -->
 				<a href="/chat" class="chat-button">💬 Чат</a>
 
-				<button class="avatar-button" on:click={toggleDropdown}>
+				<button class="avatar-button" onclick={toggleDropdown}>
 					{#if user.avatar}
 						<img src={user.avatar} alt="avatar" class="user-avatar" />
 					{:else}
@@ -34,7 +34,6 @@
 				{#if showDropdown}
 					<div class="dropdown-menu" transition:slide>
 						<a href="/profile" class="dropdown-item">👤 Профіль</a>
-						<a href="/settings" class="dropdown-item">⚙️ Налаштування</a>
 						<div class="dropdown-divider"></div>
 						<a href="/logout" class="dropdown-item">🚪 Вийти</a>
 					</div>
