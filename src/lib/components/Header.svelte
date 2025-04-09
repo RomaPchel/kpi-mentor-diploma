@@ -6,6 +6,7 @@
 
 	let showDropdown = $state(false);
 	const toggleDropdown = () => showDropdown = !showDropdown;
+	console.log(user)
 </script>
 
 <header>
@@ -21,6 +22,8 @@
 				{#if user.role !== 'mentor'}
 					<a href="/mentorship/become-mentor">Become a Mentor</a>
 					<a href="/mentorship/find-mentor">Find a Mentor</a>
+				{:else }
+					<a href="/mentorship/mentee-requests">Mentee requests</a>
 				{/if}
 				<a href="/chat">Chat</a>
 			</nav>
