@@ -1,31 +1,90 @@
 <script lang="ts">
+	import Stars from '$lib/components/Stars.svelte';
+
 	const { data } = $props();
 
-	console.log(data.mentors);
+	const state = $state({
+		search: '',
+		department: '',
+		specialization: '',
+		interest: '',
+		minRating: 0,
+		filteredMentors: data.mentors
+	});
+
+	$effect(() => {
+		const searchLower = state.search.toLowerCase();
+		const interestLower = state.interest.toLowerCase();
+
+		state.filteredMentors = data.mentors.filter((mentor) => {
+			return (
+				(!state.department || mentor.department?.toLowerCase().includes(state.department.toLowerCase())) &&
+				(!state.specialization || mentor.specialization?.toLowerCase().includes(state.specialization.toLowerCase())) &&
+				(!state.search ||
+					mentor.name.toLowerCase().includes(searchLower) ||
+					mentor.interests?.some((i) => i.toLowerCase().includes(searchLower))) &&
+				(!state.interest || mentor.interests?.some((i) => i.toLowerCase().includes(interestLower))) &&
+				mentor.rating >= state.minRating
+			);
+		});
+	});
 </script>
 
-<main>
-	<h1>Find a Mentor</h1>
 
-	{#if data.mentors.length > 0}
+<main>
+	<form class="filter-form">
+		<input type="text" placeholder="Search name or interest" bind:value={state.search} />
+		<input type="text" placeholder="Department" bind:value={state.department} />
+		<input type="text" placeholder="Specialization" bind:value={state.specialization} />
+		<input type="text" placeholder="Interest (e.g. AI, Web)" bind:value={state.interest} />
+
+		<div class="rating-range">
+			<label for="minRating">Min Rating: {state.minRating}</label>
+			<input type="range" min="0" max="5" step="0.5" id="minRating" bind:value={state.minRating} />
+		</div>
+	</form>
+
+	{#if state.filteredMentors.length > 0}
 		<div class="mentors-grid">
-			{#each data.mentors as mentor}
+			{#each state.filteredMentors as mentor}
 				<div class="mentor-card">
 					<img class="mentor-avatar" src={mentor.avatar} alt="{mentor.name} avatar" />
 					<h2>{mentor.name}</h2>
+					{#if mentor.department}
+						<p><strong>Department:</strong> {mentor.department}</p>
+					{/if}
 					<p><strong>Specialization:</strong> {mentor.specialization}</p>
+					<p><strong>Interests:</strong> {mentor.interests.join(', ')}</p>
 					<p><strong>Bio:</strong> {mentor.bio}</p>
-					<p><strong>Rating:</strong> {mentor.rating}</p>
+					<Stars
+						config={{
+						readOnly: true,
+						countStars: 5,
+						range: { min: 0, max: 5, step: 0.001 },
+						score: mentor.rating,
+						showScore: true,
+						scoreFormat: function () {
+							return `(${this.score}/${this.countStars})`;
+						},
+						name: '',
+						starConfig: {
+							size: 30,
+							fillColor: '#F9ED4F',
+							strokeColor: '#BB8511',
+							unfilledColor: '#FFF',
+							strokeUnfilledColor: '#000'
+						}
+					}}
+					/>
 					<p><strong>Total reviews:</strong> {mentor.totalReviews}</p>
 					<a href={`/mentorship/mentor-profile/${mentor.uuid}`} class="btn">View Profile</a>
 				</div>
 			{/each}
 		</div>
 	{:else}
-		<p>Loading mentors...</p>
+		<p>No mentors match your criteria.</p>
 	{/if}
 </main>
-
 <style>
     :global(body) {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

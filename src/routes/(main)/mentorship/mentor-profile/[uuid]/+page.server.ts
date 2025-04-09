@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 	}
 
 	const mentorData = await mentor.json()
-
+	console.log(mentorData)
 	const request = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentee-request/${mentorData.mentorUuid}`, {
 		method: 'GET',
 		headers: {
