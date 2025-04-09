@@ -1,10 +1,11 @@
 <script lang="ts">
 	import Stars from '$lib/components/Stars.svelte';
+	import { fly } from 'svelte/transition';
 
 	const { data } = $props();
 
-
 	let interestsArray: string[] = data.mentor.interests;
+	let showMotivationForm = $state(false);
 
 	const config = {
 		readOnly: true,
@@ -16,16 +17,20 @@
 		},
 		score: data.mentor.rating,
 		showScore: true,
-		scoreFormat: function(){ return `(${this.score}/${this.countStars})` },
-		name: "",
+		scoreFormat: function () {
+			return `(${this.score}/${this.countStars})`;
+		},
+		name: '',
 		starConfig: {
 			size: 30,
 			fillColor: '#F9ED4F',
-			strokeColor: "#BB8511",
+			strokeColor: '#BB8511',
 			unfilledColor: '#FFF',
 			strokeUnfilledColor: '#000'
 		}
-	}
+	};
+
+	const alreadyRequested = data.alreadyRequested;
 </script>
 
 <main>
@@ -38,29 +43,82 @@
 		<img class="mentor-avatar" src={data.mentor.avatar} alt="{data.mentor.name} Avatar" />
 		<div class="mentor-details">
 			<h2>Specialization: {data.mentor.specialization}</h2>
+
 			{#if data.mentor.department}
 				<p><strong>Department:</strong> {data.mentor.department}</p>
 			{/if}
+
 			{#if interestsArray.length > 0}
 				<p>
-					<strong>Interests:</strong>
-					{interestsArray.join(', ')}
+					<strong>Interests:</strong> {interestsArray.join(', ')}
 				</p>
 			{/if}
+
 			<p class="mentor-bio">{data.mentor.bio}</p>
 			<p><strong>Rating:</strong> {data.mentor.rating}</p>
 
-			<Stars {config}/>
+			<Stars {config} />
 			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
-			<form method="POST">
-				<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
-				<button type="submit">Start Chat</button>
-			</form>
+
+			{#if !alreadyRequested}
+				{#if !showMotivationForm}
+					<button class="btn" onclick={() => (showMotivationForm = true)}>
+						Request Mentorship
+					</button>
+				{:else}
+					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
+						<form method="POST">
+							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
+							<label for="motivation"><strong>Your Motivation</strong></label>
+							<textarea
+								name="motivation"
+								id="motivation"
+								placeholder="Tell the mentor why you want to connect..."
+								required
+							></textarea>
+							<button type="submit" class="btn submit-btn">Submit Request</button>
+						</form>
+					</div>
+				{/if}
+			{:else}
+				<p class="already-requested">You’ve already requested mentorship from this mentor ✅</p>
+			{/if}
 		</div>
 	</div>
 </main>
 
+
 <style>
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        resize: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        margin-top: 0.5rem;
+    }
+
+    .motivation-form {
+        width: 100%;
+        margin-top: 1.5rem;
+        text-align: left;
+    }
+
+    .motivation-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .submit-btn {
+        margin-top: 1rem;
+        width: 100%;
+    }
+
     :global(body) {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         background-color: #f9f9f9;

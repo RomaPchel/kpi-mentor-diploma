@@ -18,8 +18,19 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 		throw error(404, 'Mentor not found');
 	}
 
+	const mentorData = await mentor.json()
+
+	const request = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentee-request/${mentorData.mentorUuid}`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${cookies.get('access_token')}`,
+		}
+	})
+
+
 	return {
-		mentor: await mentor.json()
+		mentor: mentorData,
+		alreadyRequested: !!await request.json(),
 	};
 }
 
@@ -28,24 +39,24 @@ export const actions = {
 		const clonedRequest = request.clone();
 		const values = await clonedRequest.formData();
 		const mentorUuid = values.get('mentorUuid') as string;
+		const motivation = values.get('motivation') as string;
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/chat`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/user/become-mentee-request`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${cookies.get('access_token')}`,
 			},
-			body: JSON.stringify({ mentorUuid }),
+			body: JSON.stringify({ mentorUuid, motivation }),
 		});
-
 
 		if (!response.ok) {
 			return {
 				error: true,
-				message: 'Failed to create chat'
+				message: 'Failed to submit request'
 			};
 		}
 
-		return redirect(303, '/chat');
+		return redirect(303, '/mentorship/requests');
 	}
 };
