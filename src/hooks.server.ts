@@ -2,7 +2,6 @@ import { type Handle, redirect } from '@sveltejs/kit';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	console.log(event);
 	if (event.url.pathname === '/login' || event.url.pathname === '/register' || event.url.pathname === '/') {
 		return resolve(event);
 	}
