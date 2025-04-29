@@ -6,7 +6,7 @@ export async function load({ parent, cookies }) {
 	const user = parentData.user;
 	if (!user) throw redirect(303, '/login');
 
-	const mentors = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentors`, {
+	const mentors = await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -16,14 +16,14 @@ export async function load({ parent, cookies }) {
 
 
 	if (user.role === 'mentor') {
-		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentee-requests`, {
+		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-requests`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${cookies.get('access_token')}`,
 			}
 		})
 
-		const mentees = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentees`, {
+		const mentees = await fetch(`${PUBLIC_SERVER_URL}/api/mentees`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${cookies.get('access_token')}`,

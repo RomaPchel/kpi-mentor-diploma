@@ -3,7 +3,7 @@ import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const mentors = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentors`, {
+	const mentors = await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,

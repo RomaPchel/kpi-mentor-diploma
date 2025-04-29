@@ -36,7 +36,7 @@ export const actions: Actions = {
 				interests: interests.length > 0 ? interests : [],
 			};
 
-			const response = await fetch(`${PUBLIC_SERVER_URL}/api/user/profile`, {
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/users`, {
 				method: 'PUT',
 				headers: {
 					"Content-Type": "application/json",
