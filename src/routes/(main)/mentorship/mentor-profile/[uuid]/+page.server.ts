@@ -6,8 +6,9 @@ import type {
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
 	const  uuid  = params.uuid;
-
-	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/${uuid}`, {
+	let alreadyRequested = false
+	let alreadyMyMentor = false
+	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/profile/${uuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -26,24 +27,34 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 		}
 	})
 
-	if (!request.ok) {
-		console.log('ADdasdasdasdasASD')
-		return {
-			mentor: mentorData,
-			alreadyRequested: false
-		};
+
+	const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
+		headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
+	})
+	
+	const myMentors = await activeMentorsRes.json()
+
+	console.log(myMentors)
+	console.log(request.ok)
+
+	if (!request.ok || !!myMentors.find(
+		(mentor: { uuid: string }) => mentor.uuid === mentorData.uuid
+	) ) {
+		alreadyRequested = true
+		alreadyMyMentor = true
 	}
 
-	const data = await request.json();
 
+	console.log(mentorData)
 	return {
 		mentor: mentorData,
-		alreadyRequested: !!data
+		alreadyRequested: alreadyRequested,
+		alreadyMyMentor: alreadyMyMentor
 	};
 }
 
 export const actions = {
-	default: async ({ request, cookies }) => {
+	become: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
 		const values = await clonedRequest.formData();
 		const mentorUuid = values.get('mentorUuid') as string;
@@ -68,5 +79,40 @@ export const actions = {
 		}
 
 		return redirect(303, '/mentorship/requests');
+	},
+	rate: async ({ request, cookies }) => {
+		const clonedRequest = request.clone();
+		const formData = await clonedRequest.formData();
+		const mentorUuid = formData.get('mentorUuid') as string;
+		const friendliness = Number(formData.get('friendliness'));
+		const knowledge = Number(formData.get('knowledge'));
+		const communication = Number(formData.get('communication'));
+		const comment = formData.get('comment') as string | null;
+
+		const payload = {
+			friendliness,
+			knowledge,
+			communication,
+			comment,
+		};
+
+		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/rate/${mentorUuid}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${cookies.get('access_token')}`,
+			},
+			body: JSON.stringify(payload),
+		});
+
+		if (!res.ok) {
+			return {
+				error: true,
+				message: 'Failed to submit rating',
+			};
+		}
+
+		// ✅ Do this directly if you want to redirect:
+		return redirect(303, `/mentorship/mentor-profile/${mentorUuid}`);
 	}
 };

@@ -6,6 +6,7 @@
 		user: data.user,
 		role: data.role,
 		mentors: data.mentors ?? [],
+		activeMentors: data.activeMentors ?? [],
 		stats: data.stats ?? null
 	});
 </script>
@@ -16,6 +17,22 @@
 
 	{#if state.role === 'STUDENT'}
 		<p class="subtitle">Let’s find a mentor that fits you 🚀</p>
+
+		{#if state.activeMentors?.length > 0}
+			<h2>Your Mentors</h2>
+			<div class="mentors-grid">
+				{#each state.activeMentors as mentor}
+					<div class="mentor-card">
+						<img class="avatar" src={mentor.avatar} />
+						<h3>{mentor.name}</h3>
+						<p>{mentor.department}</p>
+						<p>⭐ {mentor.rating}</p>
+						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+						<a class="btn outline" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+					</div>
+				{/each}
+			</div>
+		{/if}
 
 		<h2>Suggested Mentors</h2>
 		<div class="mentors-grid">
