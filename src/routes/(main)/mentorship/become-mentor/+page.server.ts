@@ -5,9 +5,8 @@ import type { PageServerLoad, Actions } from './$types';
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
 		try {
-			// First read the form data
-			const formData = await request.formData();
-			const motivation = formData.get('motivation') as string;
+			const values = await request.formData();
+			const motivation = values.get('motivation') as string;
 
 			// Validate input
 			if (!motivation || motivation.trim().length < 50) {
@@ -17,8 +16,9 @@ export const actions: Actions = {
 				});
 			}
 
+			console.log(motivation);
 			// Make API request
-			const response = await fetch(`${PUBLIC_SERVER_URL}/api/user/become-mentor-request`, {
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
 				method: 'POST',
 				headers: {
 					"Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	try {
-		const res = await fetch(`${PUBLIC_SERVER_URL}/api/user/become-mentor-request`, {
+		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
 			method: 'GET',
 			headers: {
 				"Authorization": `Bearer ${cookies.get('access_token')}`,
@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 
 		const data = await res.json();
 		return {
-			requestExists: !!data?.uuid
+			requestExists: !!data
 		};
 	} catch (error) {
 		console.error('Error loading mentor request status:', error);

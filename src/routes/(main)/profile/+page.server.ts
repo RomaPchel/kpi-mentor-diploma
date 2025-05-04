@@ -26,8 +26,9 @@ export const actions: Actions = {
 			const profileData = {
 				firstName: formData.firstName as string,
 				lastName: formData.lastName as string,
-				bio: formData.bio as string,
+				email: formData.email as string,
 				avatar: formData.avatar as string,
+				bio: formData.bio as string,
 				specializationTitle: formData.specializationTitle as string,
 				specializationCode: formData.specializationCode as string,
 				formOfEducation: formData.formOfEducation as string,
@@ -36,7 +37,8 @@ export const actions: Actions = {
 				interests: interests.length > 0 ? interests : [],
 			};
 
-			const response = await fetch(`${PUBLIC_SERVER_URL}/api/user/profile`, {
+
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/users`, {
 				method: 'PUT',
 				headers: {
 					"Content-Type": "application/json",

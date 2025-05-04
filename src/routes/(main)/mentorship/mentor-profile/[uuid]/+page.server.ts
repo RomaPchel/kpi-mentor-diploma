@@ -7,7 +7,7 @@ import type {
 export const load: PageServerLoad = async ({ cookies, params }) => {
 	const  uuid  = params.uuid;
 
-	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentors/${uuid}`, {
+	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/${uuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -19,18 +19,26 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 	}
 
 	const mentorData = await mentor.json()
-	console.log(mentorData)
-	const request = await fetch(`${PUBLIC_SERVER_URL}/api/user/mentee-request/${mentorData.mentorUuid}`, {
+	const request = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${mentorData.mentorUuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
 		}
 	})
 
+	if (!request.ok) {
+		console.log('ADdasdasdasdasASD')
+		return {
+			mentor: mentorData,
+			alreadyRequested: false
+		};
+	}
+
+	const data = await request.json();
 
 	return {
 		mentor: mentorData,
-		alreadyRequested: !!await request.json(),
+		alreadyRequested: !!data
 	};
 }
 
@@ -41,7 +49,9 @@ export const actions = {
 		const mentorUuid = values.get('mentorUuid') as string;
 		const motivation = values.get('motivation') as string;
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/user/become-mentee-request`, {
+		console.log(mentorUuid, motivation);
+
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/become-mentee-request`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

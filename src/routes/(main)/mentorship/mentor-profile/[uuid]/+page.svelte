@@ -48,7 +48,7 @@
 				<p><strong>Department:</strong> {data.mentor.department}</p>
 			{/if}
 
-			{#if interestsArray.length > 0}
+			{#if interestsArray?.length > 0}
 				<p>
 					<strong>Interests:</strong> {interestsArray.join(', ')}
 				</p>

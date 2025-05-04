@@ -20,6 +20,7 @@ export const actions = {
 		if (response) {
 			const body = await response.json();
 
+			console.log(body);
 			const accessToken = body.accessToken;
 			const refreshToken = body.refreshToken;
 			cookies.set('access_token', accessToken, {

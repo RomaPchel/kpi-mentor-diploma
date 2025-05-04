@@ -21,11 +21,11 @@
 		<div class="mentors-grid">
 			{#each state.mentors as mentor}
 				<div class="mentor-card">
-					<img class="avatar" src={mentor.avatar} alt={mentor.name} />
+					<img class="avatar" src={mentor.avatar}/>
 					<h3>{mentor.name}</h3>
 					<p>{mentor.department}</p>
 					<p>⭐ {mentor.rating}</p>
-					<p><strong>Interests:</strong> {mentor.interests.join(', ')}</p>
+					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
 					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
 				</div>
 			{/each}

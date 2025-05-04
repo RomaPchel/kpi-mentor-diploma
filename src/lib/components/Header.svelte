@@ -12,10 +12,13 @@
 
 <header>
 	<div class="header-content">
-		<h1 style="margin: 0;">🎓 SMP</h1>
+		<a href="/dashboard"> <h1 style="margin: 0;">🎓 SMP</h1></a>
 
 		{#if isLoggedIn}
 			<div class="avatar-container">
+				{#if user.role !== 'mentor'}
+				<a href="/mentorship/become-mentor" class="chat-button">Стати ментором</a>
+					{/if}
 				<!-- Chat button placed to the left of the avatar -->
 				<a href="/chat" class="chat-button">💬 Чат</a>
 

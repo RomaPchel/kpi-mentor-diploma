@@ -15,9 +15,8 @@
 
 	// Predefined options
 	const formsOfEducation = [
-		{ value: '1', label: 'Очна' },
-		{ value: '2', label: 'Заочна' },
-		{ value: '3', label: 'Дистанційна' }
+		{ value: 'part-time', label: 'part-time' },
+		{ value: 'full-time', label: 'full-time' },
 	];
 
 	const groupCodes = [

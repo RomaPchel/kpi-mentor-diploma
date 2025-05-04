@@ -54,7 +54,7 @@
 						<p><strong>Department:</strong> {mentor.department}</p>
 					{/if}
 					<p><strong>Specialization:</strong> {mentor.specialization}</p>
-					<p><strong>Interests:</strong> {mentor.interests.join(', ')}</p>
+					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
 					<p><strong>Bio:</strong> {mentor.bio}</p>
 					<Stars
 						config={{
