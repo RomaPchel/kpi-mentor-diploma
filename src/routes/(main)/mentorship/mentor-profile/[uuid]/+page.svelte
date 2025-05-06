@@ -106,7 +106,7 @@
 						</form>
 					</div>
 				{/if}
-			{:else if alreadyMyMentor}
+			{:else if alreadyMyMentor && !data.alreadyRated}
 				{#if !showRatingForm}
 					<button class="btn" onclick={() => (showRatingForm = true)}>
 						Rate Mentor
@@ -145,9 +145,10 @@
 						</form>
 					</div>
 				{/if}
+				{:else if data.alreadyRated}
+				<p class="already-requested">You already rated this mentor ✅</p>
 			{:else}
 				<p class="already-requested">You’ve already requested mentorship from this mentor ✅</p>
-
 			{/if}
 		</div>
 		<hr style="margin: 3rem 0; width: 100%;" />

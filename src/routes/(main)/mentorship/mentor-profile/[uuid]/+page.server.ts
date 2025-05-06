@@ -4,8 +4,9 @@ import type {
 	PageServerLoad
 } from '../../../../../../.svelte-kit/types/src/routes/(main)/mentorship/mentor-profile/[uuid]/$types.js';
 
-export const load: PageServerLoad = async ({ cookies, params }) => {
+export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 	const  uuid  = params.uuid;
+	const currentUser = locals.user;
 	let alreadyRequested = false
 	let alreadyMyMentor = false
 	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/profile/${uuid}`, {
@@ -34,8 +35,12 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 	
 	const myMentors = await activeMentorsRes.json()
 
-	console.log(myMentors)
-	console.log(request.ok)
+	let alreadyRated = false;
+	if (Array.isArray(mentorData.reviews)) {
+		alreadyRated = mentorData.reviews.some(
+			(r: any) => r.reviewer?.uuid === currentUser.uuid
+		);
+	}
 
 	if (!request.ok || !!myMentors.find(
 		(mentor: { uuid: string }) => mentor.uuid === mentorData.uuid
@@ -44,12 +49,17 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 		alreadyMyMentor = true
 	}
 
+	if (!myMentors.find(
+		(mentor: { uuid: string }) => mentor.uuid === mentorData.mentorUuid
+	)){
+		alreadyRequested = false
+	}
 
-	console.log(mentorData)
 	return {
 		mentor: mentorData,
 		alreadyRequested: alreadyRequested,
-		alreadyMyMentor: alreadyMyMentor
+		alreadyMyMentor: alreadyMyMentor,
+		alreadyRated
 	};
 }
 

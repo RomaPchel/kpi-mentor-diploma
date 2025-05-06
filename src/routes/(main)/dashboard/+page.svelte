@@ -5,9 +5,10 @@
 	const state = $state({
 		user: data.user,
 		role: data.role,
-		mentors: data.mentors ?? [],
+		availableMentors: data.availableMentors ?? [],
 		activeMentors: data.activeMentors ?? [],
-		stats: data.stats ?? null
+		stats: data.stats ?? null,
+		allRequests: data.allRequests ?? []
 	});
 </script>
 
@@ -36,14 +37,14 @@
 
 		<h2>Suggested Mentors</h2>
 		<div class="mentors-grid">
-			{#each state.mentors as mentor}
+			{#each state.availableMentors as mentor}
 				<div class="mentor-card">
 					<img class="avatar" src={mentor.avatar}/>
 					<h3>{mentor.name}</h3>
 					<p>{mentor.department}</p>
 					<p>⭐ {mentor.rating}</p>
 					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+					<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
 				</div>
 			{/each}
 		</div>
@@ -64,6 +65,41 @@
 			<a class="btn" href="/mentorship/mentee-requests">📬 View Requests</a>
 			<a class="btn outline" href="/profile">👤 Update Profile</a>
 		</div>
+	{:else if state.role === 'ADMIN'}
+		<p class="subtitle">Mentor requests overview 📊</p>
+
+		<h2>All Mentor Requests</h2>
+
+		{#if state.allRequests.length > 0}
+			<div class="requests">
+				{#each state.allRequests as req}
+					<div class="card">
+						<div class="mentee">
+							<img src={req.user.avatar} alt="avatar" />
+							<div>
+								<h3>{req.user.name}</h3>
+								<p>{req.user.email}</p>
+							</div>
+						</div>
+						<p class="motivation"><strong>Motivation:</strong> {req.motivation}</p>
+
+						<div class="actions">
+							<form method="POST">
+								<input type="hidden" name="uuid" value={req.uuid} />
+								<button type="submit" formaction="?/approve" class="approve">✅ Approve</button>
+							</form>
+
+							<form method="POST">
+								<input type="hidden" name="uuid" value={req.uuid} />
+								<button type="submit" formaction="?/reject" class="reject">❌ Reject</button>
+							</form>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<p>No mentor requests found.</p>
+		{/if}
 	{/if}
 </main>
 
@@ -143,5 +179,61 @@
         display: flex;
         gap: 1rem;
         flex-wrap: wrap;
+    }
+
+    .requests {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+    .mentee {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .mentee img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .motivation {
+        font-style: italic;
+        margin: 0.5rem 0;
+    }
+
+    .actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    button {
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .approve {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .reject {
+        background-color: #f44336;
+        color: white;
     }
 </style>
