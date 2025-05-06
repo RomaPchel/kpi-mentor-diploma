@@ -20,6 +20,8 @@ export async function load({ parent, cookies }) {
 				Authorization: `Bearer ${cookies.get('access_token')}`,
 			}
 		})
+
+
 		const data = await requests.json();
 
 		const menteesData = await mentees.json();
@@ -51,10 +53,12 @@ export async function load({ parent, cookies }) {
 
 	if (user.role === 'student') {
 		const  mentorsRes= await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
+			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 			})
 
 		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
+			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		})
 
@@ -88,10 +92,10 @@ export const actions = {
 	approve: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
 		const data = await clonedRequest.formData();
-		const uuid = data.get('uuid')?.toString();
+		const id = data.get('id')?.toString();
 
-		console.log(uuid)
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${uuid}`, {
+		console.log(id)
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
