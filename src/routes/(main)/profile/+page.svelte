@@ -1,23 +1,19 @@
 <script lang="ts">
-	// Retrieve data passed as props (including a user object)
-	let { data,form } = $props();
+	let { data, form } = $props();
 	let profile = data.user;
 
-	// Local state variables for form handling
-	let formChanged = false;
+	let formChanged = $state(false);
 	let saving = false;
 	let errorMessage = '';
 	let successMessage = '';
 
-	// For avatar preview
-	let avatarPreview = profile.avatar;
+	let avatarPreview = $state(profile.avatar);
 	let fileInput: HTMLInputElement;
+	let mainForm: HTMLFormElement;
 
-	// Predefined options
 	const formsOfEducation = [
-		{ value: '1', label: 'Очна' },
-		{ value: '2', label: 'Заочна' },
-		{ value: '3', label: 'Дистанційна' }
+		{ value: 'part-time', label: 'part-time' },
+		{ value: 'full-time', label: 'full-time' },
 	];
 
 	const groupCodes = [
@@ -54,7 +50,6 @@
 
 	let selectedInterests = $state([] as string[]);
 
-	// Initialize from profile data
 	selectedInterests = Array.isArray(profile.interests)
 		? profile.interests
 		: (typeof profile.interests === 'string' ? profile.interests.split(',').map(s => s.trim()) : []);
@@ -69,46 +64,30 @@
 		updateFormState();
 	}
 
-	// Mark form as changed when any input is modified
 	function updateFormState() {
 		formChanged = true;
 	}
 
-	// Handle file selection for avatar upload
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
 		if (target.files && target.files[0]) {
 			const file = target.files[0];
+			if (!file.type.startsWith("image/")) {
+				alert("Please upload a valid image.");
+				return;
+			}
+			if (file.size > 1024 * 1024) {
+				alert("Image is too large. Max 1MB.");
+				return;
+			}
 			const reader = new FileReader();
 			reader.onload = (e) => {
-				avatarPreview = e.target?.result as string;
-				updateFormState();
+				const result = e.target?.result as string;
+				avatarPreview = result;
+				profile.avatar = result;
+				// hidden input will get updated automatically
 			};
 			reader.readAsDataURL(file);
-		}
-	}
-
-
-	// Save profile changes (simulate API call)
-	async function saveProfile() {
-		saving = true;
-		errorMessage = '';
-		successMessage = '';
-
-		try {
-			// Convert interests to array if needed
-			profile.interests = selectedInterests;
-
-			// In a real application, send the updated profile data to your API.
-			// e.g., using fetch() to POST to an endpoint.
-			await new Promise(resolve => setTimeout(resolve, 1000));
-
-			successMessage = 'Profile updated successfully!';
-			formChanged = false;
-		} catch (error) {
-			errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-		} finally {
-			saving = false;
 		}
 	}
 </script>
@@ -136,34 +115,28 @@
 		<div class="profile-content">
 			<div class="sidebar">
 				<div class="avatar-section">
-					<div class="avatar-container">
-						{#if avatarPreview}
-							<img src={avatarPreview} alt="Profile avatar" class="avatar" />
-						{:else}
-							<div class="avatar-placeholder">
-								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-									<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-									<circle cx="12" cy="7" r="4"></circle>
-								</svg>
-							</div>
-						{/if}
+					<div class="avatar-upload">
+
+						<form method="POST">
+							{#if avatarPreview}
+								<img class="avatar" src={avatarPreview} alt="Avatar Preview" />
+							{:else}
+								<div class="avatar-placeholder">No avatar</div>
+							{/if}
+							<label class="upload-label" for="avatar-upload">Upload Photo</label>
+							<input
+								id="avatar-upload"
+								type="file"
+								accept="image/*"
+								bind:this={fileInput}
+								onchange={handleFileSelect}
+							/>
+							<input type="hidden" name="avatar" value={avatarPreview} />
+							<button type="submit" formaction="?/updateAvatar" class="approve">✅ Approve</button>
+
+						</form>
+
 					</div>
-					<label for="avatar-upload" class="avatar-upload-btn">
-						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-							<polyline points="17 8 12 3 7 8"></polyline>
-							<line x1="12" y1="3" x2="12" y2="15"></line>
-						</svg>
-						Upload Photo
-					</label>
-					<input
-						type="file"
-						id="avatar-upload"
-						accept="image/*"
-						bind:this={fileInput}
-						onchange={handleFileSelect}
-						style="display: none;"
-					/>
 				</div>
 				<div class="profile-nav">
 					<a href="#personal-info" class="nav-item active">
@@ -209,6 +182,7 @@
 							<button
 								type="submit"
 								class="btn btn-primary"
+								formaction="?/update"
 							>
 								{saving ? 'Saving...' : 'Save Changes'}
 							</button>
@@ -368,6 +342,7 @@
 </main>
 
 <style>
+
     .profile-page {
         padding: 2rem 0;
     }

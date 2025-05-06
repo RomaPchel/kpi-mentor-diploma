@@ -9,16 +9,34 @@ export const actions = {
 		const password = data.get('password') as string;
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
+		const specializationTitle = data.get('specializationTitle') as string;
+		const course = data.get('course') as string;
+		const formOfEducation = data.get('formOfEducation') as string;
+		const groupCode = data.get('groupCode') as string;
+		const department = data.get('department') as string;
+
+		const interests = data.getAll('interests').map((val) => val.toString());
 
 		const response = await fetch(`${PUBLIC_SERVER_URL}/api/auth/register`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ email: email, password: password, firstName: firstName, lastName: lastName }),
+			body: JSON.stringify({
+				email,
+				password,
+				firstName,
+				lastName,
+				specializationTitle,
+				formOfEducation,
+				groupCode,
+				department,
+				interests,
+				course,
+			}),
 		});
 
-		if (response) {
+		if (response.ok) {
 			const body = await response.json();
 			locals.accessToken = body.accessToken;
 			locals.refreshToken = body.refreshToken;
@@ -39,6 +57,10 @@ export const actions = {
 
 			throw redirect(303, '/dashboard');
 		}
-		return { success: false, error: 'Invalid credentials' };
+
+		return {
+			success: false,
+			error: 'Registration failed. Please check your data and try again.',
+		};
 	}
 };

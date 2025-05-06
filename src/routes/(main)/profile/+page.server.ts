@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	update: async ({ request, cookies }) => {
 		try {
 			// Clone the request to read form data
 			const clonedRequest = request.clone();
@@ -21,13 +21,15 @@ export const actions: Actions = {
 
 			// Extract all form data at once
 			const formData = Object.fromEntries(data.entries());
+			console.log(formData)
 			const interests = data.getAll('interests') as string[];
 
 			const profileData = {
 				firstName: formData.firstName as string,
 				lastName: formData.lastName as string,
-				bio: formData.bio as string,
+				email: formData.email as string,
 				avatar: formData.avatar as string,
+				bio: formData.bio as string,
 				specializationTitle: formData.specializationTitle as string,
 				specializationCode: formData.specializationCode as string,
 				formOfEducation: formData.formOfEducation as string,
@@ -35,6 +37,9 @@ export const actions: Actions = {
 				department: formData.department as string,
 				interests: interests.length > 0 ? interests : [],
 			};
+
+			console.log(profileData)
+
 
 			const response = await fetch(`${PUBLIC_SERVER_URL}/api/users`, {
 				method: 'PUT',
@@ -60,6 +65,40 @@ export const actions: Actions = {
 				message: 'Internal server error',
 				error: true
 			});
+		}
+	},
+	updateAvatar: async ({ request, cookies }) => {
+		try {
+			console.log("ASDASDADAS")
+
+			const data = await request.formData();
+			const avatar = data.get('avatar');
+
+			if (typeof avatar !== 'string' || !avatar.startsWith('data:image/')) {
+				return fail(400, { message: 'Invalid avatar image format' });
+			}
+
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/users`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${cookies.get('access_token')}`
+				},
+				body: JSON.stringify({ avatar })
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				return fail(response.status, {
+					message: error.message || 'Failed to update avatar',
+					error: true
+				});
+			}
+
+			return { success: true };
+		} catch (error) {
+			console.error('Avatar update error:', error);
+			return fail(500, { message: 'Internal server error', error: true });
 		}
 	}
 };

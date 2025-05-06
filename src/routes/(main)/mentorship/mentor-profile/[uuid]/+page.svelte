@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Stars from '$lib/components/Stars.svelte';
 	import { fly } from 'svelte/transition';
+	import CustomStar from '$lib/components/CustomStar.svelte';
 
 	const { data } = $props();
 
@@ -31,6 +32,31 @@
 	};
 
 	const alreadyRequested = data.alreadyRequested;
+	const alreadyMyMentor = data.alreadyMyMentor;
+
+	let showRatingForm = $state(false); // ⭐
+
+	let friendliness = $state(0);
+	let knowledge =  $state(0);
+	let communication =  $state(0);
+	let comment =  $state('');
+
+	console.log(friendliness);
+
+	function updateScore(type: 'friendliness' | 'knowledge' | 'communication', value: number) {
+		switch (type) {
+			case 'friendliness':
+				friendliness = value;
+				break;
+			case 'knowledge':
+				knowledge = value;
+				break;
+			case 'communication':
+				communication = value;
+				break;
+		}
+		console.log(`${type} updated to`, value);
+	}
 </script>
 
 <main>
@@ -48,7 +74,7 @@
 				<p><strong>Department:</strong> {data.mentor.department}</p>
 			{/if}
 
-			{#if interestsArray.length > 0}
+			{#if interestsArray?.length > 0}
 				<p>
 					<strong>Interests:</strong> {interestsArray.join(', ')}
 				</p>
@@ -76,14 +102,87 @@
 								placeholder="Tell the mentor why you want to connect..."
 								required
 							></textarea>
-							<button type="submit" class="btn submit-btn">Submit Request</button>
+							<button type="submit" formaction="?/become" class="approve">✅ Approve</button>
 						</form>
 					</div>
 				{/if}
+			{:else if alreadyMyMentor && !data.alreadyRated}
+				{#if !showRatingForm}
+					<button class="btn" onclick={() => (showRatingForm = true)}>
+						Rate Mentor
+					</button>
+				{:else}
+					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
+						<form method="POST" >
+							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
+
+							<label><strong>Friendliness</strong></label>
+							<CustomStar
+								bind:value={friendliness}
+								readOnly={false}
+							/>
+
+							<label><strong>Knowledge</strong></label>
+							<CustomStar bind:value={knowledge} readOnly={false} />
+
+							<label><strong>Communication</strong></label>
+							<CustomStar bind:value={communication} readOnly={false} />
+
+							<label for="comment"><strong>Comment</strong></label>
+							<textarea
+								id="comment"
+								name="comment"
+								bind:value={comment}
+								placeholder="Your thoughts..."
+								rows="4"
+							></textarea>
+
+							<input type="hidden" name="friendliness" value={friendliness} />
+							<input type="hidden" name="knowledge" value={knowledge} />
+							<input type="hidden" name="communication" value={communication} />
+
+							<button type="submit" formaction="?/rate" class="approve">✅ Approve</button>
+						</form>
+					</div>
+				{/if}
+				{:else if data.alreadyRated}
+				<p class="already-requested">You already rated this mentor ✅</p>
 			{:else}
 				<p class="already-requested">You’ve already requested mentorship from this mentor ✅</p>
 			{/if}
 		</div>
+		<hr style="margin: 3rem 0; width: 100%;" />
+
+		<h2 style="margin-bottom: 1rem;">Reviews</h2>
+
+		{#if data.mentor.reviews?.length > 0}
+			{#each data.mentor.reviews as review}
+				<div class="review-card">
+					<h3>{review.reviewer?.firstName} {review.reviewer?.lastName}</h3>
+
+					<div class="review-ratings">
+						<div>
+							<p><strong>Friendliness:</strong></p>
+							<CustomStar value={review.friendliness} readOnly={true} />
+						</div>
+						<div>
+							<p><strong>Knowledge:</strong></p>
+							<CustomStar value={review.knowledge} readOnly={true} />
+						</div>
+						<div>
+							<p><strong>Communication:</strong></p>
+							<CustomStar value={review.communication} readOnly={true} />
+						</div>
+					</div>
+
+					{#if review.comment}
+						<p class="review-comment">"{review.comment}"</p>
+					{/if}
+				</div>
+			{/each}
+		{:else}
+			<p>No reviews yet.</p>
+		{/if}
 	</div>
 </main>
 
@@ -200,4 +299,28 @@
     .btn:hover {
         background: #005bb5;
     }
+
+    .review-card {
+        background: #f1f5f9;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        text-align: left;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .review-ratings {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+        gap: 1rem;
+    }
+
+    .review-comment {
+        font-style: italic;
+        color: #374151;
+        margin-top: 0.5rem;
+    }
+
 </style>
