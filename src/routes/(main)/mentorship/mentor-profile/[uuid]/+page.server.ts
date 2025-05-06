@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 	}
 
 	const mentorData = await mentor.json()
-	const request = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${mentorData.mentorUuid}`, {
+	const request = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests/${mentorData.mentorUuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 	})
 
 
-	const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
+	const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
 		headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 	})
 	
@@ -72,7 +72,7 @@ export const actions = {
 
 		console.log(mentorUuid, motivation);
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/become-mentee-request`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

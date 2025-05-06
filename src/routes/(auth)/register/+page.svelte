@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 
+	const { data } = $props();
+
 	const formsOfEducation = [
 		{ value: 'part-time', label: 'Заочна' },
 		{ value: 'full-time', label: 'Денна' }
 	];
 
-	const groupCodes = ['ІПЗ-21-1', 'ІПЗ-21-2', 'ІПЗ-21-3', 'КН-21-1', 'КН-21-2', 'ПМ-21-1', 'ПМ-21-2'];
+	const courses = ['-', '1', '2', '3', '4', '5'];
 
-	const courses = ['1', '2', '3', '4', '5'];
-
-	const departments = [
-		'Кафедра інформатики',
-		'Кафедра математики',
-		'Кафедра програмної інженерії',
-		'Кафедра кібербезпеки'
-	];
+	const state = $state({
+		selectedFormOfEducation: '',
+		selectedCourse: '',
+		selectedSpecialization: '',
+		selectedDepartment: ''
+	});
 
 	const predefinedInterests = [
 		'Програмування', 'Машинне навчання', 'Веб-розробка',
@@ -38,65 +38,68 @@
 		<form method="POST">
 			<div class="form-grid">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
-				<input type="password" name="password" placeholder="Пароль (мін. 6 символів)" minlength="6" required />
 				<input type="text" name="firstName" placeholder="Ім’я" required />
 				<input type="text" name="lastName" placeholder="Прізвище" required />
+				<input type="password" name="password" placeholder="Пароль (мін. 6 символів)" minlength="6" required />
 
-				<select name="specializationTitle" required>
-					<option value="" disabled selected>Спеціальність</option>
-					{#each groupCodes as spec}
-						<option value={spec}>{spec}</option>
-					{/each}
-				</select>
-
-				<select name="course" required>
-					<option value="" disabled selected>Курс</option>
-					{#each courses as c}
-						<option value={c}>{c}</option>
-					{/each}
-				</select>
-
-				<select name="formOfEducation" required>
-					<option value="" disabled selected>Форма навчання</option>
+				<select name="formOfEducation" bind:value={state.selectedFormOfEducation} required>
+					<option value="" disabled>Форма навчання</option>
 					{#each formsOfEducation as f}
 						<option value={f.value}>{f.label}</option>
 					{/each}
 				</select>
 
-				<select name="groupCode" required>
-					<option value="" disabled selected>Група</option>
-					{#each groupCodes as code}
-						<option value={code}>{code}</option>
+				<!-- Course (disabled until form selected) -->
+				<select name="course" bind:value={state.selectedCourse} disabled={!state.selectedFormOfEducation} required>
+					<option value="" disabled>Курс</option>
+					{#each courses as c}
+						<option value={c}>{c}</option>
 					{/each}
 				</select>
 
-				<select name="department" required>
-					<option value="" disabled selected>Кафедра</option>
-					{#each departments as dept}
-						<option value={dept}>{dept}</option>
+				<!-- Specialization (disabled until course selected) -->
+				<select name="specialization" bind:value={state.selectedSpecialization} disabled={!state.selectedCourse}
+								required>
+					<option value="" disabled>Спеціальність</option>
+					{#each data.specialities as spec}
+						<option value={spec.code + ' ' + spec.name}>{spec.code + ' ' + spec.name}</option>
 					{/each}
 				</select>
-			</div>
 
-			<div class="interests-section">
-				<label><strong>Інтереси</strong></label>
-				<div class="interests">
-					{#each predefinedInterests as interest}
-						<button
-							type="button"
-							class:selected={selectedInterests.includes(interest)}
-							on:click={() => toggleInterest(interest)}
-						>
-							{interest}
-						</button>
+				<select name="department" bind:value={state.selectedDepartment} disabled={!state.selectedSpecialization}
+								required>
+					<option value="" disabled selected>Факультет/інститут</option>
+					{#each data.specialities as spec}
+						<option value={spec.department}>{spec.department}</option>
 					{/each}
-					{#each selectedInterests as interest}
-						<input type="hidden" name="interests" value={interest} />
-					{/each}
+				</select>
+
+				{#if state.selectedCourse !== '-'}
+					<input type="text" name="groupCode" placeholder="ТВ-13" minlength="5" required
+								 disabled="{!state.selectedDepartment}" />
+				{/if}
+
+
+				<div class="interests-section">
+					<label><strong>Інтереси</strong></label>
+					<div class="interests">
+						{#each predefinedInterests as interest}
+							<button
+								type="button"
+								class:selected={selectedInterests.includes(interest)}
+								on:click={() => toggleInterest(interest)}
+							>
+								{interest}
+							</button>
+						{/each}
+						{#each selectedInterests as interest}
+							<input type="hidden" name="interests" value={interest} />
+						{/each}
+					</div>
 				</div>
-			</div>
 
-			<button class="submit-btn" type="submit">Зареєструватися</button>
+				<button class="submit-btn" type="submit">Зареєструватися</button>
+			</div>
 		</form>
 	</section>
 </div>
@@ -134,7 +137,7 @@
 
     .form-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        /*grid-template-columns: 1fr 1fr;*/
         gap: 1rem;
     }
 

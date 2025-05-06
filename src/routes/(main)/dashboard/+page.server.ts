@@ -7,7 +7,7 @@ export async function load({ parent, cookies }) {
 	if (!user) throw redirect(303, '/login');
 
 	if (user.role === 'mentor') {
-		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-requests`, {
+		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -36,7 +36,7 @@ export async function load({ parent, cookies }) {
 	}
 
 	if (user.role === 'admin') {
-		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/all`, {
+		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		});
 
@@ -54,7 +54,7 @@ export async function load({ parent, cookies }) {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 			})
 
-		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
+		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		})
 
@@ -91,7 +91,7 @@ export const actions = {
 		const uuid = data.get('uuid')?.toString();
 
 		console.log(uuid)
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${uuid}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -106,9 +106,9 @@ export const actions = {
 	reject: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
 		const data = await clonedRequest.formData();
-		const uuid = data.get('uuid')?.toString();
+		const id = data.get('uuid')?.toString();
 
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
