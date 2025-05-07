@@ -23,7 +23,7 @@ export const actions = {
 		const password = data.get('password') as string;
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
-		const specializationTitle = data.get('specialization') as string;
+		const specialization = data.get('specialization') as string;
 		const course = data.get('course') as string;
 		const formOfEducation = data.get('formOfEducation') as string;
 		const groupCode = data.get('groupCode') as string;
@@ -41,7 +41,7 @@ export const actions = {
 				password,
 				firstName,
 				lastName,
-				specializationTitle,
+				specialization,
 				formOfEducation,
 				groupCode,
 				department,
@@ -49,7 +49,7 @@ export const actions = {
 				course
 			})
 		});
-		console.log(response);
+
 		if (response.ok) {
 			const body = await response.json();
 			locals.accessToken = body.accessToken;
