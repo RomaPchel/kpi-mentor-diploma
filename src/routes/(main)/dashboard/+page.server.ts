@@ -61,6 +61,8 @@ export async function load({ parent, cookies }) {
 		const mentors = await mentorsRes.json();
 		const activeMentors = await activeMentorsRes.json();
 
+		console.log(mentors)
+
 		const activeMentorUuids = new Set(activeMentors.map((m: { uuid: string }) => m.uuid));
 
 		const availableMentors = mentors.filter((m: { mentorUuid: string }) => {
