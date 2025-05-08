@@ -185,7 +185,9 @@
 		{/if}
 	</div>
 </main>
-
+<footer>
+	<p>&copy; {new Date().getFullYear()} MentorConnect. All rights reserved.</p>
+</footer>
 
 <style>
     textarea {
@@ -322,5 +324,14 @@
         color: #374151;
         margin-top: 0.5rem;
     }
-
+    footer {
+        position: absolute;
+        width: 100%;
+        background-color: #f0f0f0;
+        color: #555;
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid #ddd;
+        font-size: 0.9rem;
+    }
 </style>

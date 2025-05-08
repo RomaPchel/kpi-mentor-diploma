@@ -1,10 +1,14 @@
 <script>
 	import { fade } from "svelte/transition";
+	import errors from '$lib/locale.json';
+
+	const { form } = $props();
 </script>
 
 <div class="login-container">
 	<section class="login-card" in:fade>
 		<h1>Вхід до акаунту</h1>
+		{#if form?.error}<p class="error">{errors[form?.error.message]}</p>{/if}
 		<form method="POST">
 			<div class="input-group">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
@@ -14,7 +18,9 @@
 		</form>
 	</section>
 </div>
-
+<footer>
+	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
+</footer>
 <style>
     .login-container {
         display: flex;
@@ -79,7 +85,19 @@
     button:hover {
         background-color: #1d4ed8;
     }
-
+    .error {
+        color: red;
+    }
+    footer {
+        position: absolute;
+        width: 100%;
+        background-color: #f0f0f0;
+        color: #555;
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid #ddd;
+        font-size: 0.9rem;
+    }
     @keyframes blur-serve {
         0% {
             filter: blur(0.5rem);

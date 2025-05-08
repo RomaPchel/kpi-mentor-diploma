@@ -44,7 +44,7 @@
 					<p>{mentor.department}</p>
 					<p>⭐ {mentor.rating}</p>
 					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+					<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
 				</div>
 			{/each}
 		</div>
@@ -103,9 +103,8 @@
 	{/if}
 </main>
 <footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
+	<p>&copy; {new Date().getFullYear()} MentorConnect. All rights reserved.</p>
 </footer>
-
 <style>
 
     main {
@@ -240,9 +239,10 @@
         color: white;
     }
     footer {
-        position: absolute;
+        position: fixed;
+        bottom: 0;
+        left: 0;
         width: 100%;
-				bottom: 0;
         background-color: #f0f0f0;
         color: #555;
         text-align: center;
