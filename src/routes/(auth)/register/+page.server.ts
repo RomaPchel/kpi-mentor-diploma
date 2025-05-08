@@ -71,10 +71,11 @@ export const actions = {
 
 			throw redirect(303, '/dashboard');
 		}
+		const errorBody = await response.json();
 
 		return {
 			success: false,
-			error: 'Registration failed. Please check your data and try again.'
+			error: errorBody
 		};
 	}
 };

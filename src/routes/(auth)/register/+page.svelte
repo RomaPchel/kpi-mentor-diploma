@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 
-	const { data } = $props();
+	const { data, form } = $props();
 
 	const formsOfEducation = [
 		{ value: 'part-time', label: 'Заочна' },
@@ -16,6 +16,24 @@
 		selectedSpecialization: '',
 		selectedDepartment: ''
 	});
+
+	const filteredSpecialities = (course: string) => {
+		const level = course === '5' ? 'Магістр' : 'Бакалавр';
+
+		const specs = data.specialities.filter(s => s.level === level).map(s => `${s.code} ${s.name}`);
+
+		return [...new Set(specs)];
+	};
+
+	const filteredDepartments = (specialization: string) => {
+		if (specialization !== '') {
+			const departments = data.specialities
+				.filter(s => specialization.includes(s.code))
+				.map(s => s.department);
+			return [...new Set(departments)];
+		}
+		return [];
+	};
 
 	const predefinedInterests = [
 		'Програмування', 'Машинне навчання', 'Веб-розробка',
@@ -35,12 +53,13 @@
 <div class="register-container">
 	<section class="register-card" in:fade>
 		<h1>Реєстрація</h1>
+		{#if form?.error}<p class="error">{form?.error.message}</p>{/if}
 		<form method="POST">
 			<div class="form-grid">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
 				<input type="text" name="firstName" placeholder="Ім’я" required />
 				<input type="text" name="lastName" placeholder="Прізвище" required />
-				<input type="password" name="password" placeholder="Пароль (мін. 6 символів)" minlength="6" required />
+				<input type="password" name="password" placeholder="Пароль (мін. 8 символів)" minlength="8" required />
 
 				<select name="formOfEducation" bind:value={state.selectedFormOfEducation} required>
 					<option value="" disabled>Форма навчання</option>
@@ -61,16 +80,16 @@
 				<select name="specialization" bind:value={state.selectedSpecialization} disabled={!state.selectedCourse}
 								required>
 					<option value="" disabled>Спеціальність</option>
-					{#each data.specialities as spec}
-						<option value={spec.code + ' ' + spec.name}>{spec.code + ' ' + spec.name}</option>
+					{#each filteredSpecialities(state.selectedCourse) as spec}
+						<option value={spec}>{spec}</option>
 					{/each}
 				</select>
 
 				<select name="department" bind:value={state.selectedDepartment} disabled={!state.selectedSpecialization}
 								required>
 					<option value="" disabled selected>Факультет/інститут</option>
-					{#each data.specialities as spec}
-						<option value={spec.department}>{spec.department}</option>
+					{#each filteredDepartments(state.selectedSpecialization) as department}
+						<option value={department}>{department}</option>
 					{/each}
 				</select>
 
@@ -200,5 +219,9 @@
         .form-grid {
             grid-template-columns: 1fr;
         }
+    }
+
+    .error {
+        color: red;
     }
 </style>
