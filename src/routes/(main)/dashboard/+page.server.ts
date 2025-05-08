@@ -91,9 +91,8 @@ export const actions = {
 	approve: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
 		const data = await clonedRequest.formData();
-		const id = data.get('id')?.toString();
+		const id = data.get('uuid')?.toString();
 
-		console.log(id)
 		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${id}`, {
 			method: 'PUT',
 			headers: {
@@ -102,7 +101,6 @@ export const actions = {
 			},
 			body: JSON.stringify({status: 'approved'}),
 		});
-
 		return redirect(303, '/dashboard');
 	},
 

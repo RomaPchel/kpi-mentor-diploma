@@ -12,15 +12,12 @@
 		<form method="POST">
 			<div class="input-group">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
-				<input type="password" name="password" placeholder="Пароль" required minlength="6" />
+				<input type="password" name="password" placeholder="Пароль" required minlength="8" />
 			</div>
 			<button type="submit">Увійти</button>
 		</form>
 	</section>
 </div>
-<footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
-</footer>
 <style>
     .login-container {
         display: flex;
@@ -87,16 +84,6 @@
     }
     .error {
         color: red;
-    }
-    footer {
-        position: absolute;
-        width: 100%;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
     }
     @keyframes blur-serve {
         0% {

@@ -6,121 +6,88 @@ export async function load({ parent, cookies }) {
 	const user = parentData.user;
 	if (!user) throw redirect(303, '/login');
 
-	if (user.role === 'mentor') {
-		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests`, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${cookies.get('access_token')}`,
-			}
-		})
+	let roleLabel: string;
 
-		const mentees = await fetch(`${PUBLIC_SERVER_URL}/api/mentees`, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${cookies.get('access_token')}`,
-			}
-		})
-
-
-		const data = await requests.json();
-
-		const menteesData = await mentees.json();
-		return {
-			role: 'MENTOR',
-			user,
-			requests: data.requests,
-			activeMentors: [],
-			stats: {
-				totalRequests: data.requests.length,
-				activeMentees: menteesData.length,
-			}
-		};
+	switch (user.role) {
+		case 'student':
+			roleLabel = 'STUDENT';
+			break;
+		case 'admin':
+			roleLabel = 'ADMIN';
+			break;
+		case 'mentor':
+			roleLabel = 'MENTOR';
+			break;
+		default:
+			throw redirect(303, '/unauthorized');
 	}
 
-	if (user.role === 'admin') {
-		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
-			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
-		});
+	const events = await fetch(`${PUBLIC_SERVER_URL}/api/events`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${cookies.get('access_token')}`
+		}
+	});
 
-		const requestsData = await allRequests.json();
+	const users = await fetch(`${PUBLIC_SERVER_URL}/api/users`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${cookies.get('access_token')}`
+		}
+	});
 
-		return {
-			role: 'ADMIN',
-			user,
-			allRequests: requestsData ?? []
-		};
-	}
+	const eventsData = await events.json();
+	const usersData = await users.json();
 
-	if (user.role === 'student') {
-		const  mentorsRes= await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
-			method: 'GET',
-			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
-			})
-
-		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
-			method: 'GET',
-			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
-		})
-
-		const mentors = await mentorsRes.json();
-		const activeMentors = await activeMentorsRes.json();
-		const activeMentorUuids = new Set(activeMentors.map((m: { uuid: string }) => m.uuid));
-
-		const availableMentors = mentors.filter((m: { mentorUuid: string }) => {
-			const normalized = m.mentorUuid.trim();
-			const isActive = activeMentorUuids.has(normalized);
-			if (isActive) {
-				console.log('Excluded active mentor:', normalized);
-			}
-			return !isActive;
-		});
-
-
-		return {
-			role: 'STUDENT',
-			user,
-			availableMentors,
-			activeMentors: activeMentors ?? []
-		};
-	}
-
-	throw redirect(303, '/unauthorized');
+	return {
+		role: roleLabel,
+		user,
+		events: eventsData,
+		users: usersData
+	};
 }
 
 export const actions = {
-	approve: async ({ request, cookies }) => {
+	create: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
-		const data = await clonedRequest.formData();
-		const id = data.get('id')?.toString();
+		const values = await clonedRequest.formData();
+		console.log(values);
+		const url = values.get('url') as string;
+		const timestampInput = values.get('timestamp') as string;
+		const timestamp = new Date(timestampInput).getTime().toString();
+		const participants = values.getAll('participants') as string[];
 
-		console.log(id)
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${id}`, {
-			method: 'PUT',
+		await fetch(`${PUBLIC_SERVER_URL}/api/events`, {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${cookies.get('access_token')}`
 			},
-			body: JSON.stringify({status: 'approved'}),
+			body: JSON.stringify({ url, timestamp, participants })
 		});
 
-		return redirect(303, '/dashboard');
+		return redirect(303, '/events');
 	},
 
-	reject: async ({ request, cookies }) => {
+	update: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
-		const data = await clonedRequest.formData();
-		const id = data.get('uuid')?.toString();
+		const values = await clonedRequest.formData();
+		const id = values.get('id')?.toString();
+		const url = values.get('url') as string;
+		const status = values.get('status') as string;
+		const timestampInput = values.get('timestamp') as string;
+		const timestamp = new Date(timestampInput).getTime().toString(); // gives 13 digits
+		const participants = values.getAll('participants') as string[];
 
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${id}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/events/${id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${cookies.get('access_token')}`
 			},
-			body: JSON.stringify({status: 'rejected'}),
-
+			body: JSON.stringify({ url, timestamp, status, participants })
 		});
 
-		return redirect(303, '/dashboard');
+		return redirect(303, '/events');
 	}
 };

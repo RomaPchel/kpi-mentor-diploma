@@ -185,9 +185,6 @@
 		{/if}
 	</div>
 </main>
-<footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
-</footer>
 <style>
     h1 {
         font-size: 2.5rem;
@@ -362,15 +359,5 @@
         text-align: center;
         color: #6b7280;
         font-size: 1.1rem;
-    }
-    footer {
-        position: absolute;
-        width: 100%;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
     }
 </style>

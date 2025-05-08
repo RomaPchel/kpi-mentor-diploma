@@ -26,9 +26,6 @@ import Header from '$lib/components/Header.svelte';
 		</ul>
 	</section>
 </main>
-<footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
-</footer>
 <style>
     :global(body) {
         margin: 0;
@@ -148,17 +145,5 @@ import Header from '$lib/components/Header.svelte';
         padding-left: 1.5rem;
         margin-top: 1rem;
         color: #555;
-    }
-
-    footer {
-        position: absolute;
-        width: 100%;
-				bottom: 0;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
     }
 </style>

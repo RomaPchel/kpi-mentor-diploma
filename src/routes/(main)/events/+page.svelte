@@ -1,253 +1,264 @@
 <script lang="ts">
+	import locale from '$lib/locale.json';
 
-	const {data} = $props()
+	const { data } = $props();
 
 	const state = $state({
 		user: data.user,
 		role: data.role,
-		availableMentors: data.availableMentors ?? [],
-		activeMentors: data.activeMentors ?? [],
-		stats: data.stats ?? null,
-		allRequests: data.allRequests ?? []
+		events: data.events ?? [],
+		users: data.users ?? [],
+		showCreateEventForm: false,
+		showEditEventForm: false,
+		selectedParticipants: [],
+		editingEvent: null
 	});
+
+	function createEvent() {
+		state.showCreateEventForm = true;
+	}
+
+	function closeCreateModal() {
+		state.showCreateEventForm = false;
+	}
+
+	function editEvent(event) {
+		state.editingEvent = JSON.parse(JSON.stringify(event));
+		state.showEditEventForm = true;
+	}
+
+
+	function closeEditModal() {
+		state.editingEvent = null;
+		state.showEditEventForm = false;
+	}
+
+	function formatLocalDate(timestamp: number | string) {
+		const date = new Date(timestamp);
+		const tzOffset = date.getTimezoneOffset() * 60000;
+		const localISO = new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+		return localISO;
+	}
 </script>
 
 <main>
+	<h1>Зустрічі</h1>
 
-	<h1>Welcome, {state.user.firstName}!</h1>
-
-	{#if state.role === 'STUDENT'}
-		<p class="subtitle">Let’s find a mentor that fits you 🚀</p>
-
-		{#if state.activeMentors?.length > 0}
-			<h2>Your Mentors</h2>
-			<div class="mentors-grid">
-				{#each state.activeMentors as mentor}
-					<div class="mentor-card">
-						<img class="avatar" src={mentor.avatar} />
-						<h3>{mentor.name}</h3>
-						<p>{mentor.department}</p>
-						<p>⭐ {mentor.rating}</p>
-						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-						<a class="btn outline" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
-					</div>
-				{/each}
-			</div>
-		{/if}
-
-		<h2>Suggested Mentors</h2>
-		<div class="mentors-grid">
-			{#each state.availableMentors as mentor}
-				<div class="mentor-card">
-					<img class="avatar" src={mentor.avatar}/>
-					<h3>{mentor.name}</h3>
-					<p>{mentor.department}</p>
-					<p>⭐ {mentor.rating}</p>
-					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-					<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
+	{#if state.events.length > 0}
+		<div class="card-container">
+			{#each state.events as event}
+				<div class="card">
+					<p><strong>Посилання:</strong> <a href={event.url} target="_blank">{event.url}</a></p>
+					<p><strong>Коли:</strong> {new Date(event.timestamp).toLocaleString()}</p>
+					<p><strong>Статус:</strong> {locale[event.status]}</p>
+					<p><strong>Організатор:</strong> {event.owner.name}</p>
+					<p><strong>Учасники:</strong></p>
+					<ul>
+						{#each event.participants as participant}
+							<li>{participant.name}</li>
+						{/each}
+					</ul>
+					{#if state.role === 'MENTOR'}
+						<button on:click={() => editEvent(event)} class="create-button">Оновити</button>
+					{/if}
 				</div>
 			{/each}
 		</div>
+	{:else}
+		<p>Івентів не знайдено</p>
+	{/if}
 
-		<div class="actions">
-			<a class="btn outline" href="/mentorship/find-mentor">🔍 Browse All Mentors</a>
-		</div>
-
-	{:else if state.role === 'MENTOR'}
-		<p class="subtitle">Here’s what’s going on with your mentorships 💼</p>
-
-		<div class="mentor-stats">
-			<div class="card"><h3>{state.stats.totalRequests}</h3><p>Pending Requests</p></div>
-			<div class="card"><h3>{state.stats.activeMentees}</h3><p>Active Mentees</p></div>
-		</div>
-
-		<div class="actions">
-			<a class="btn" href="/mentorship/mentee-requests">📬 View Requests</a>
-			<a class="btn outline" href="/profile">👤 Update Profile</a>
-		</div>
-	{:else if state.role === 'ADMIN'}
-		<p class="subtitle">Mentor requests overview 📊</p>
-
-		<h2>All Mentor Requests</h2>
-
-		{#if state.allRequests.length > 0}
-			<div class="requests">
-				{#each state.allRequests as req}
-					<div class="card">
-						<div class="mentee">
-							<img src={req.user.avatar} alt="avatar" />
-							<div>
-								<h3>{req.user.name}</h3>
-								<p>{req.user.email}</p>
-							</div>
-						</div>
-						<p class="motivation"><strong>Motivation:</strong> {req.motivation}</p>
-
-						<div class="actions">
-							<form method="POST">
-								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/approve" class="approve">✅ Approve</button>
-							</form>
-
-							<form method="POST">
-								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/reject" class="reject">❌ Reject</button>
-							</form>
-						</div>
-					</div>
-				{/each}
-			</div>
-		{:else}
-			<p>No mentor requests found.</p>
-		{/if}
+	{#if state.role === 'MENTOR'}
+		<button on:click={createEvent} class="create-button">Створити зустріч</button>
 	{/if}
 </main>
-<footer>
-	<p>&copy; {new Date().getFullYear()} MentorConnect. All rights reserved.</p>
-</footer>
-<style>
 
+{#if state.showCreateEventForm}
+	<div class="modal-backdrop" on:click={closeCreateModal}></div>
+	<div class="modal">
+		<h2>Нова зустріч</h2>
+		<form method="POST">
+			<label>
+				<strong>Посилання:</strong>
+				<input name="url" type="text" required />
+			</label>
+			<label>
+				<strong>Коли:</strong>
+				<input name="timestamp" type="datetime-local" required />
+			</label>
+			<label><strong>Учасники:</strong></label>
+			{#each state.users as participant}
+				<label class="participant-option">
+					<input
+						type="checkbox"
+						name="participants"
+						value={participant.id}
+					/>
+					{participant.firstName} {participant.lastName}
+				</label>
+			{/each}
+			<br />
+			<div class="actions">
+				<button class="create-form-button" type="submit" formaction="?/create">Create</button>
+				<button class="cancel-form-button" type="button" on:click={closeCreateModal}>Cancel</button>
+			</div>
+		</form>
+	</div>
+{/if}
+
+{#if state.showEditEventForm}
+	<div class="modal-backdrop" on:click={closeEditModal}></div>
+	<div class="modal">
+		<h2>Редагувати зустріч</h2>
+		<form method="POST">
+			<input type="hidden" name="id" value={state.editingEvent.id} />
+			<label>
+				<strong>Посилання:</strong>
+				<input
+					name="url"
+					type="text"
+					required
+					value={state.editingEvent.url}
+				/>
+			</label>
+			<label>
+				<strong>Коли:</strong>
+				<input
+					name="timestamp"
+					type="datetime-local"
+					required
+					value={formatLocalDate(state.editingEvent.timestamp)}
+				/>
+			</label>
+			<label>
+				<strong>Статус:</strong>
+				<select name="status" required>
+					<option value="planned" selected={state.editingEvent.status === 'planned'}>Заплановано</option>
+					<option value="completed" selected={state.editingEvent.status === 'completed'}>Виконано</option>
+					<option value="cancelled" selected={state.editingEvent.status === 'cancelled'}>Скасовано</option>
+				</select>
+			</label>
+			<label><strong>Учасники:</strong></label>
+			{#each state.users as participant}
+				<label class="participant-option">
+					<input
+						type="checkbox"
+						name="participants"
+						value={participant.id}
+						checked={state.editingEvent.participants.some(p => p.id === participant.id)}
+					/>
+					{participant.firstName} {participant.lastName}
+				</label>
+			{/each}
+			<br />
+			<div class="actions">
+				<button class="create-form-button" type="submit" formaction="?/update">Update</button>
+				<button class="cancel-form-button" type="button" on:click={closeEditModal}>Cancel</button>
+			</div>
+		</form>
+	</div>
+{/if}
+
+
+<style>
     main {
         max-width: 900px;
         margin: 0 auto;
         padding: 2rem;
     }
-
     h1 {
         font-size: 2rem;
     }
-
-    .subtitle {
-        color: #777;
-        margin-bottom: 1.5rem;
-    }
-
-    .mentors-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .mentor-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 1rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        text-align: center;
-    }
-
-    .avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 0.5rem;
-    }
-
-    .btn {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        background: #0070f3;
-        color: #fff;
+    .create-button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
         border-radius: 6px;
-        text-decoration: none;
-        font-weight: 500;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+				margin-top: 1.5rem;
+    }
+    .create-form-button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .cancel-form-button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
     }
 
-    .btn.outline {
-        background: transparent;
-        border: 1px solid #0070f3;
-        color: #0070f3;
-    }
-
-    .mentor-stats {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .mentor-stats .card {
-        flex: 1;
-        background: #fff;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        text-align: center;
-    }
-
-    .actions {
-        margin-top: 2rem;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .requests {
+    .card-container {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
     }
 
     .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         padding: 1.5rem;
+        border-radius: 8px;
+        background-color: #f0f4f8;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    .card a {
+        color: #0077cc;
+        text-decoration: none;
+    }
+    .card a:hover {
+        text-decoration: underline;
+    }
+    .card ul {
+        margin-top: 0.5rem;
+        padding-left: 1.25rem;
     }
 
-    .mentee {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .mentee img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .motivation {
-        font-style: italic;
-        margin: 0.5rem 0;
-    }
-
-    .actions {
-        margin-top: 1rem;
-        display: flex;
-        gap: 1rem;
-    }
-
-    button {
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .approve {
-        background-color: #4caf50;
-        color: white;
-    }
-
-    .reject {
-        background-color: #f44336;
-        color: white;
-    }
-    footer {
+    .modal-backdrop {
         position: fixed;
-        bottom: 0;
+        top: 0;
         left: 0;
-        width: 100%;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    .modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1001;
+        width: 90%;
+        max-width: 500px;
+    }
+    .modal h2 {
+        margin-top: 0;
+    }
+    .modal label {
+        display: block;
+        margin-top: 1rem;
+    }
+    .participant-option {
+        display: block;
+        margin-left: 1rem;
+    }
+    .actions {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 1rem;
     }
 </style>

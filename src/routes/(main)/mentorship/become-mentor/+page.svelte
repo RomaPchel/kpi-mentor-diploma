@@ -77,9 +77,6 @@
 		{/if}
 	</div>
 </main>
-<footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
-</footer>
 <style>
     .mentor-request {
         background-color: #f8fafc;
@@ -256,16 +253,6 @@
 
     .pending-approval a:hover {
         text-decoration: underline;
-    }
-    footer {
-        position: absolute;
-        width: 100%;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
     }
     @media (max-width: 640px) {
         .container {

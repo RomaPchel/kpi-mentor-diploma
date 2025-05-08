@@ -123,9 +123,6 @@
 		</form>
 	</section>
 </div>
-<footer>
-	<p>&copy; {new Date().getFullYear()} SMP. Всі права захищені.</p>
-</footer>
 <style>
     .register-container {
         display: flex;
@@ -226,15 +223,5 @@
 
     .error {
         color: red;
-    }
-    footer {
-        position: absolute;
-        width: 100%;
-        background-color: #f0f0f0;
-        color: #555;
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-        font-size: 0.9rem;
     }
 </style>
