@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import errors from '$lib/locale.json'; // ✅ use $lib alias (if `src` is aliased as `$lib`)
 
 	const { data, form } = $props();
 
@@ -53,7 +54,7 @@
 <div class="register-container">
 	<section class="register-card" in:fade>
 		<h1>Реєстрація</h1>
-		{#if form?.error}<p class="error">{form?.error.message}</p>{/if}
+		{#if form?.error}<p class="error">{errors[form?.error.message]}</p>{/if}
 		<form method="POST">
 			<div class="form-grid">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
