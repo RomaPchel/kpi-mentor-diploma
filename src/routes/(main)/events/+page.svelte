@@ -50,7 +50,10 @@
 				<div class="card">
 					<p><strong>Посилання:</strong> <a href={event.url} target="_blank">{event.url}</a></p>
 					<p><strong>Коли:</strong> {new Date(event.timestamp).toLocaleString()}</p>
-					<p><strong>Статус:</strong> {locale[event.status]}</p>
+					<p>
+						<strong>Статус:</strong>
+						<span class={event.status === 'canceled' ? 'status-canceled' :event.status === 'completed' ? 'status-completed' :'status-other'}>{locale[event.status]}</span>
+					</p>
 					<p><strong>Організатор:</strong> {event.owner.name}</p>
 					<p><strong>Учасники:</strong></p>
 					<ul>
@@ -135,7 +138,7 @@
 				<select name="status" required>
 					<option value="planned" selected={state.editingEvent.status === 'planned'}>Заплановано</option>
 					<option value="completed" selected={state.editingEvent.status === 'completed'}>Виконано</option>
-					<option value="cancelled" selected={state.editingEvent.status === 'cancelled'}>Скасовано</option>
+					<option value="canceled" selected={state.editingEvent.status === 'canceled'}>Скасовано</option>
 				</select>
 			</label>
 			<label><strong>Учасники:</strong></label>
@@ -166,9 +169,11 @@
         margin: 0 auto;
         padding: 2rem;
     }
+
     h1 {
         font-size: 2rem;
     }
+
     .create-button {
         background-color: #0077cc;
         color: white;
@@ -178,7 +183,19 @@
         border-radius: 6px;
         cursor: pointer;
         margin-bottom: 1.5rem;
-				margin-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .status-canceled {
+        color: red;
+        font-weight: bold;
+    }
+    .status-completed {
+        color: green;
+        font-weight: bold;
+    }
+    .status-other {
+        color: #0077cc; /* blue */
+        font-weight: bold;
     }
     .create-form-button {
         background-color: #0077cc;
@@ -189,6 +206,7 @@
         border-radius: 6px;
         cursor: pointer;
     }
+
     .cancel-form-button {
         background-color: red;
         color: white;
@@ -211,13 +229,16 @@
         background-color: #f0f4f8;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
+
     .card a {
         color: #0077cc;
         text-decoration: none;
     }
+
     .card a:hover {
         text-decoration: underline;
     }
+
     .card ul {
         margin-top: 0.5rem;
         padding-left: 1.25rem;
@@ -232,6 +253,7 @@
         background: rgba(0, 0, 0, 0.5);
         z-index: 1000;
     }
+
     .modal {
         position: fixed;
         top: 50%;
@@ -245,17 +267,21 @@
         width: 90%;
         max-width: 500px;
     }
+
     .modal h2 {
         margin-top: 0;
     }
+
     .modal label {
         display: block;
         margin-top: 1rem;
     }
+
     .participant-option {
         display: block;
         margin-left: 1rem;
     }
+
     .actions {
         margin-top: 1.5rem;
         display: flex;
