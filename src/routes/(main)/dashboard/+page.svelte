@@ -44,6 +44,13 @@
 		<h2>Рекомендовані ментори</h2>
 		<div class="card-grid">
 			{#each state.availableMentors as mentor}
+				<div class="mentor-card">
+					<img class="avatar" src={mentor.avatar}/>
+					<h3>{mentor.name}</h3>
+					<p>{mentor.department}</p>
+					<p>⭐ {mentor.rating}</p>
+					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
 				<div class="card">
 					<div class="level-badge">
 						<LevelBadge levelTitle={mentor.stats.levelTitle} level={mentor.stats.level} />
@@ -133,7 +140,6 @@
 		{/if}
 	{/if}
 </main>
-
 <style>
     main {
         max-width: 1200px;

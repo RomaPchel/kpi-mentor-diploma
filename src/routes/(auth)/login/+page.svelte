@@ -1,20 +1,23 @@
 <script>
 	import { fade } from "svelte/transition";
+	import errors from '$lib/locale.json';
+
+	const { form } = $props();
 </script>
 
 <div class="login-container">
 	<section class="login-card" in:fade>
 		<h1>Вхід до акаунту</h1>
+		{#if form?.error}<p class="error">{errors[form?.error.message]}</p>{/if}
 		<form method="POST">
 			<div class="input-group">
 				<input type="email" name="email" placeholder="Електронна пошта" required />
-				<input type="password" name="password" placeholder="Пароль" required minlength="6" />
+				<input type="password" name="password" placeholder="Пароль" required minlength="8" />
 			</div>
 			<button type="submit">Увійти</button>
 		</form>
 	</section>
 </div>
-
 <style>
     .login-container {
         display: flex;
@@ -79,7 +82,9 @@
     button:hover {
         background-color: #1d4ed8;
     }
-
+    .error {
+        color: red;
+    }
     @keyframes blur-serve {
         0% {
             filter: blur(0.5rem);

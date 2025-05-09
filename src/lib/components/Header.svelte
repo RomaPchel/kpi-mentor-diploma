@@ -21,6 +21,7 @@
 					{/if}
 				<!-- Chat button placed to the left of the avatar -->
 				<a href="/chat" class="chat-button">💬 Чат</a>
+				<a href="/events" class="event-button">Зустрічі</a>
 
 				<button class="avatar-button" onclick={toggleDropdown}>
 					{#if user.avatar}
@@ -86,7 +87,19 @@
         font-weight: 500;
         transition: background 0.2s ease;
     }
+    .event-button {
+        text-decoration: none;
+        padding: 0.5rem 0.8rem;
+        background: #0070f3;
+        color: #fff;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
     .chat-button:hover {
+        background: #005bb5;
+    }
+    .event-button:hover {
         background: #005bb5;
     }
     .avatar-button {

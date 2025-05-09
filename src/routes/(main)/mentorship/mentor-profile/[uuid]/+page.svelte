@@ -216,8 +216,6 @@
 		{/if}
 	</div>
 </main>
-
-
 <style>
     textarea {
         width: 100%;
@@ -398,6 +396,7 @@
         color: #374151;
         margin-top: 0.5rem;
     }
+
 
     .header-top {
         display: flex;

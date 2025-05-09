@@ -7,7 +7,7 @@ export async function load({ parent, cookies }) {
 	if (!user) throw redirect(303, '/login');
 
 	if (user.role === 'mentor') {
-		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-requests`, {
+		const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -20,6 +20,8 @@ export async function load({ parent, cookies }) {
 				Authorization: `Bearer ${cookies.get('access_token')}`,
 			}
 		})
+
+
 		const data = await requests.json();
 
 		const menteesData = await mentees.json();
@@ -36,7 +38,7 @@ export async function load({ parent, cookies }) {
 	}
 
 	if (user.role === 'admin') {
-		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/all`, {
+		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		});
 
@@ -51,11 +53,12 @@ export async function load({ parent, cookies }) {
 
 	if (user.role === 'student') {
 		const  mentorsRes= await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
+			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 			})
-		console.log(mentorsRes)
 
-		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
+		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
+			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		})
 
@@ -92,8 +95,7 @@ export const actions = {
 		const data = await clonedRequest.formData();
 		const uuid = data.get('uuid')?.toString();
 
-		console.log(uuid)
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${uuid}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -101,7 +103,6 @@ export const actions = {
 			},
 			body: JSON.stringify({status: 'approved'}),
 		});
-
 		return redirect(303, '/dashboard');
 	},
 
@@ -110,7 +111,7 @@ export const actions = {
 		const data = await clonedRequest.formData();
 		const uuid = data.get('uuid')?.toString();
 
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/request/${uuid}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',

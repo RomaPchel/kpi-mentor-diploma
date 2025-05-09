@@ -339,7 +339,6 @@
 		</div>
 	</div>
 </main>
-
 <style>
 
     .profile-page {
@@ -662,7 +661,6 @@
         opacity: 0.6;
         cursor: not-allowed;
     }
-
     @media (max-width: 768px) {
         .profile-content {
             grid-template-columns: 1fr;
