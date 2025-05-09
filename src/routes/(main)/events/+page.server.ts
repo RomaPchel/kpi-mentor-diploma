@@ -28,19 +28,19 @@ export async function load({ parent, cookies, url }) {
 	} else {
 		params.set('users', JSON.stringify([user.uuid]));
 	}
-	const status = url.searchParams.get('status');
-	const minTimestamp = url.searchParams.get('minTimestamp');
-	const maxTimestamp = url.searchParams.get('maxTimestamp');
-
-	if (status) {
-		params.set('status', status);
-	}
-	if (minTimestamp) {
-		params.set('minTimestamp', minTimestamp);
-	}
-	if (maxTimestamp) {
-		params.set('maxTimestamp', maxTimestamp);
-	}
+	// const status = url.searchParams.get('status');
+	// const minTimestamp = url.searchParams.get('minTimestamp');
+	// const maxTimestamp = url.searchParams.get('maxTimestamp');
+	//
+	// if (status) {
+	// 	params.set('status', status);
+	// }
+	// if (minTimestamp) {
+	// 	params.set('minTimestamp', minTimestamp);
+	// }
+	// if (maxTimestamp) {
+	// 	params.set('maxTimestamp', maxTimestamp);
+	// }
 
 	const events = await fetch(`${PUBLIC_SERVER_URL}/api/events?${params.toString()}`, {
 		method: 'GET',
@@ -63,7 +63,8 @@ export async function load({ parent, cookies, url }) {
 		role: roleLabel,
 		user,
 		events: eventsData,
-		users: usersData
+		users: usersData,
+		token: cookies.get('access_token'),
 	};
 }
 
