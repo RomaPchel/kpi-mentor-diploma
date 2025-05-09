@@ -283,6 +283,7 @@
     }
     .our-pick {
         margin-bottom: 2rem;
+				width: 30%;
     }
 
     .card.highlight {
