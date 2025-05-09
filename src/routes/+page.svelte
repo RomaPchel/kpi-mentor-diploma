@@ -4,28 +4,26 @@ import Header from '$lib/components/Header.svelte';
 <Header />
 
 <main>
-	<!-- Hero Section -->
 	<section class="hero">
-		<h2>Welcome to SMP</h2>
+		<h2>Ласкаво просимо до SMP</h2>
 		<p>
-			Empowering students to connect with experienced mentors and shape your future.
+			Допомагаємо студентам знаходити досвідчених менторів і формувати своє майбутнє.
 		</p>
-
 	</section>
 
-	<!-- Info Section -->
 	<section class="info">
-		<h3>How SMP Works</h3>
+		<h3>Як працює SMP</h3>
 		<p>
-			Our platform connects you with mentors from later years who share your interests and major. With personalized recommendations and an integrated chat system, you can easily find guidance on your academic and professional journey.
+			Наша платформа з'єднує вас із менторами зі старших курсів, які поділяють ваші інтереси та спеціальність. Завдяки персоналізованим рекомендаціям та вбудованому чату ви легко отримаєте підтримку в навчанні та кар’єрному розвитку.
 		</p>
 		<ul>
-			<li>Browse mentors based on department and interests</li>
-			<li>Connect via secure, in-app chat</li>
-			<li>Schedule one-on-one sessions or group mentoring events</li>
+			<li>Переглядайте менторів за кафедрою та інтересами</li>
+			<li>Спілкуйтеся через безпечний внутрішній чат</li>
+			<li>Плануйте індивідуальні сесії або групові зустрічі</li>
 		</ul>
 	</section>
 </main>
+
 
 <style>
     :global(body) {

@@ -125,7 +125,7 @@
 	<div class="chat-layout">
 		<div class="chat-sidebar" class:hidden={mobileView}>
 			<div class="chat-list-header">
-				<h1>Messages</h1>
+				<h1>Повідомлення</h1>
 			</div>
 
 			<div class="search-container">
@@ -136,7 +136,7 @@
 					</svg>
 					<input
 						type="text"
-						placeholder="Search conversations..."
+						placeholder="Пошук бесід..."
 						bind:value={searchQuery}
 					/>
 				</div>
@@ -148,7 +148,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
 							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
 						</svg>
-						<p>No conversations found</p>
+						<p>Бесіди не знайдено</p>
 					</div>
 				{:else}
 					{#each filteredChats as chat (chat.uuid)}
@@ -159,23 +159,23 @@
 						>
 							<div class="avatar">
 								{#if chat.otherUser?.avatar}
-									<img src={chat.otherUser.avatar} alt="Profile" />
+									<img src={chat.otherUser.avatar} alt="Аватар" />
 								{:else}
 									<div class="avatar-placeholder">{getInitials(chat.otherUser)}</div>
 								{/if}
 							</div>
 							<div class="chat-info">
 								<div class="chat-header">
-									<h3>{chat.otherUser ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}` : 'Unknown User'}</h3>
+									<h3>{chat.otherUser ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}` : 'Невідомий користувач'}</h3>
 									{#if chat.messages && chat.messages.length > 0}
 										<span class="timestamp">{formatLastMessageTime(chat.messages[chat.messages.length-1]?.createdAt)}</span>
 									{/if}
 								</div>
 								<p class="preview-message">
 									{#if chat.messages && chat.messages.length > 0}
-										{chat.messages[chat.messages.length-1]?.content || 'No messages yet'}
+										{chat.messages[chat.messages.length-1]?.content || 'Ще немає повідомлень'}
 									{:else}
-										Start a conversation
+										Почніть бесіду
 									{/if}
 								</p>
 								{#if chat.unreadCount > 0}
@@ -197,10 +197,9 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
 							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
 							<path d="M9 10h.01M12 10h.01M15 10h.01"></path>
-						</svg>
-					</div>
-					<h2>Select a conversation</h2>
-					<p>Choose a conversation from the list or start a new one</p>
+						</svg>					</div>
+					<h2>Оберіть бесіду</h2>
+					<p>Виберіть розмову зі списку або почніть нову</p>
 				</div>
 			{/if}
 		</div>

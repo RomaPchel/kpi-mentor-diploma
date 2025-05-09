@@ -15,38 +15,31 @@
 	<div class="container">
 		{#if !data.requestExists}
 			<div class="header">
-				<h1>Become a Mentor</h1>
-				<p class="subtitle">Share your knowledge and guide students in their academic journey</p>
+				<h1>Стати ментором</h1>
+				<p class="subtitle">Поділіться своїми знаннями та допоможіть студентам у навчанні</p>
 			</div>
 
-			<form
-				method="POST"
-				class="mentor-form"
-			>
+			<form method="POST" class="mentor-form">
 				<div class="form-group">
-					<label for="motivation" class="form-label">Your Motivation</label>
+					<label for="motivation" class="form-label">Ваша мотивація</label>
 					<textarea
 						id="motivation"
 						name="motivation"
 						bind:value={motivation}
 						required
-						placeholder="Tell us why you want to become a mentor and what you can offer..."
+						placeholder="Розкажіть, чому ви хочете стати ментором і чим можете допомогти..."
 						rows="5"
 						class="form-input"
 					></textarea>
-					<p class="hint">Minimum 50 characters</p>
+					<p class="hint">Мінімум 50 символів</p>
 				</div>
 
-				<button
-					type="submit"
-					disabled={$submitting}
-					class="submit-btn"
-				>
+				<button type="submit" disabled={$submitting} class="submit-btn">
 					{#if $submitting}
 						<span class="spinner"></span>
-						Submitting...
+						Надсилання...
 					{:else}
-						Submit Request
+						Надіслати заявку
 					{/if}
 				</button>
 
@@ -70,13 +63,14 @@
 						<polyline points="22 4 12 14.01 9 11.01"></polyline>
 					</svg>
 				</div>
-				<h2>Your Request is Under Review</h2>
-				<p>We've received your application to become a mentor. Our team will review it and get back to you soon.</p>
-				<p class="contact">If you have any questions, please contact <a href="mailto:mentors@university.edu">mentors@university.edu</a></p>
+				<h2>Ваш запит на розгляді</h2>
+				<p>Ми отримали вашу заявку на участь у програмі менторства. Наша команда перегляне її найближчим часом.</p>
+				<p class="contact">Якщо у вас є запитання, напишіть на <a href="mailto:mentors@university.edu">mentors@university.edu</a></p>
 			</div>
 		{/if}
 	</div>
 </main>
+
 
 <style>
     .mentor-request {

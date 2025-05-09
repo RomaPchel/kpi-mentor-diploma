@@ -76,25 +76,24 @@
 </script>
 
 <main>
-	<h1>Find a Mentor</h1>
+	<h1>Знайти ментора</h1>
 
 	<div class="layout">
 		<form class="filter-panel">
 			<div class="form-group">
-				<label>Search</label>
-				<input type="text" placeholder="Name" bind:value={state.search} />
+				<label>Пошук</label>
+				<input type="text" placeholder="Ім'я" bind:value={state.search} />
 			</div>
 
 			<div class="form-group">
-				<label>Department</label>
-				<input type="text" placeholder="e.g. Computer Science" bind:value={state.department} />
+				<label>Факультет</label>
+				<input type="text" placeholder="наприклад, Комп'ютерні науки" bind:value={state.department} />
 			</div>
 
-
 			<div class="form-group">
-				<label>Interest</label>
+				<label>Інтерес</label>
 				<select bind:value={state.interest}>
-					<option value="">-- Select interest --</option>
+					<option value="">-- Оберіть інтерес --</option>
 					{#each predefinedInterests as interest}
 						<option value={interest}>{interest}</option>
 					{/each}
@@ -102,27 +101,27 @@
 			</div>
 
 			<div class="form-group">
-				<label>Min Rating</label>
+				<label>Мінімальний рейтинг</label>
 				<input type="range" min="0" max="5" step="0.5" bind:value={state.minRating} />
-				<small>{state.minRating} stars</small>
+				<small>{state.minRating} зірок</small>
 			</div>
 
 			<hr />
 
 			<div class="form-group">
-				<label>Min Friendliness</label>
+				<label>Мінімальна привітність</label>
 				<input type="range" min="0" max="5" step="0.5" bind:value={state.minFriendliness} />
 				<small>{state.minFriendliness} / 5</small>
 			</div>
 
 			<div class="form-group">
-				<label>Min Knowledge</label>
+				<label>Мінімальні знання</label>
 				<input type="range" min="0" max="5" step="0.5" bind:value={state.minKnowledge} />
 				<small>{state.minKnowledge} / 5</small>
 			</div>
 
 			<div class="form-group">
-				<label>Min Communication</label>
+				<label>Мінімальна комунікація</label>
 				<input type="range" min="0" max="5" step="0.5" bind:value={state.minCommunication} />
 				<small>{state.minCommunication} / 5</small>
 			</div>
@@ -140,45 +139,46 @@
 							<h3>{mentor.name}</h3>
 
 							<p class="badge">{mentor.department}</p>
-							<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+							<p><strong>Інтереси:</strong> {mentor.interests?.join(', ')}</p>
 							<Stars
 								config={{
-                readOnly: true,
-                countStars: 5,
-                range: { min: 0, max: 5, step: 0.001 },
-                score: mentor.rating,
-                showScore: true,
-                scoreFormat: function () {
-                  return `(${this.score.toFixed(1)}/5)`;
-                },
-                name: '',
-                starConfig: {
-                  size: 24,
-                  fillColor: '#FACC15',
-                  strokeColor: '#D97706',
-                  unfilledColor: '#E5E7EB',
-                  strokeUnfilledColor: '#9CA3AF'
-                }
-              }}
+                  readOnly: true,
+                  countStars: 5,
+                  range: { min: 0, max: 5, step: 0.001 },
+                  score: mentor.rating,
+                  showScore: true,
+                  scoreFormat: function () {
+                    return `(${this.score.toFixed(1)}/5)`;
+                  },
+                  name: '',
+                  starConfig: {
+                    size: 24,
+                    fillColor: '#FACC15',
+                    strokeColor: '#D97706',
+                    unfilledColor: '#E5E7EB',
+                    strokeUnfilledColor: '#9CA3AF'
+                  }
+                }}
 							/>
 							<div class="subratings">
-								<span>😊 Friendliness: {mentor.avgFriendliness?.toFixed(1)}</span>
-								<span>🧠 Knowledge: {mentor.avgKnowledge?.toFixed(1)}</span>
-								<span>🗣 Communication: {mentor.avgCommunication?.toFixed(1)}</span>
+								<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>
+								<span>🧠 Знання: {mentor.avgKnowledge?.toFixed(1)}</span>
+								<span>🗣 Комунікація: {mentor.avgCommunication?.toFixed(1)}</span>
 							</div>
-							<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
+							<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>Переглянути профіль</a>
 						</div>
 					</div>
 				{/each}
 			</div>
 		{:else}
 			<div class="no-results">
-				<p>No mentors match your filters.</p>
-				<p>Try adjusting filters or broadening your search.</p>
+				<p>Ментори не знайдені за заданими фільтрами.</p>
+				<p>Спробуйте змінити фільтри або розширити пошук.</p>
 			</div>
 		{/if}
 	</div>
 </main>
+
 
 <style>
     h1 {

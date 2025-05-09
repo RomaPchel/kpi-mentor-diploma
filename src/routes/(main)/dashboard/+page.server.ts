@@ -53,6 +53,7 @@ export async function load({ parent, cookies }) {
 		const  mentorsRes= await fetch(`${PUBLIC_SERVER_URL}/api/mentors`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 			})
+		console.log(mentorsRes)
 
 		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
@@ -61,7 +62,6 @@ export async function load({ parent, cookies }) {
 		const mentors = await mentorsRes.json();
 		const activeMentors = await activeMentorsRes.json();
 
-		console.log(mentors)
 
 		const activeMentorUuids = new Set(activeMentors.map((m: { uuid: string }) => m.uuid));
 

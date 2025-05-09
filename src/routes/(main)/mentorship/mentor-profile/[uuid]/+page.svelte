@@ -61,8 +61,7 @@
 </script>
 
 <main>
-
-	<a class="back-btn" href="/mentorship/find-mentor">&larr; Back to Mentors</a>
+	<a class="back-btn" href="/mentorship/find-mentor">&larr; Назад до менторів</a>
 
 	<div class="mentor-profile-card">
 		<div class="profile-header">
@@ -71,139 +70,100 @@
 
 				{#if alreadyMyMentor}
 					<a class="feedback-btn" href={`/mentorship/mentor-profile/${data.mentor.mentorUuid}/feedback`}>
-						Report
+						Поскаржитися
 					</a>
 				{/if}
 			</div>
 		</div>
-		<img class="mentor-avatar" src={data.mentor.avatar} alt="{data.mentor.name} Avatar" />
+		<img class="mentor-avatar" src={data.mentor.avatar} alt="{data.mentor.name} Аватар" />
 
 		<div class="mentor-details">
 			<h2>
-				Specialization: {data.mentor.specialization}
+				Спеціалізація: {data.mentor.specialization}
 				{#if data.mentor.stats.level}
 					<LevelBadge levelTitle={data.mentor.stats.levelTitle} level={data.mentor.stats.level} />
 				{/if}
 			</h2>
 
 			{#if data.mentor.department}
-				<p><strong>Department:</strong> {data.mentor.department}</p>
+				<p><strong>Факультет:</strong> {data.mentor.department}</p>
 			{/if}
 
 			{#if interestsArray?.length > 0}
-				<p>
-					<strong>Interests:</strong> {interestsArray.join(', ')}
-				</p>
+				<p><strong>Інтереси:</strong> {interestsArray.join(', ')}</p>
 			{/if}
-			<h2 style="margin-top: 2rem;">📈 Mentor Dashboard</h2>
 
+			<h2 style="margin-top: 2rem;">📈 Панель ментора</h2>
 			<div class="mentor-dashboard">
-
-				<div class="stat-box">
-					<h3>{data.mentor.stats.totalMentees}</h3>
-					<p>Active Mentees</p>
-				</div>
-				<div class="stat-box">
-					<h3>{data.mentor.stats.totalSessions}</h3>
-					<p>Total Sessions</p>
-				</div>
-				<div class="stat-box">
-					<h3>{data.mentor.avgFriendliness?.toFixed(1)}</h3>
-					<p>😊 Friendliness</p>
-				</div>
-				<div class="stat-box">
-					<h3>{data.mentor.avgKnowledge?.toFixed(1)}</h3>
-					<p>🧠 Knowledge</p>
-				</div>
-				<div class="stat-box">
-					<h3>{data.mentor.avgCommunication?.toFixed(1)}</h3>
-					<p>🗣 Communication</p>
-				</div>
+				<div class="stat-box"><h3>{data.mentor.stats.totalMentees}</h3><p>Активні підопічні</p></div>
+				<div class="stat-box"><h3>{data.mentor.stats.totalSessions}</h3><p>Всього сесій</p></div>
+				<div class="stat-box"><h3>{data.mentor.avgFriendliness?.toFixed(1)}</h3><p>😊 Привітність</p></div>
+				<div class="stat-box"><h3>{data.mentor.avgKnowledge?.toFixed(1)}</h3><p>🧠 Знання</p></div>
+				<div class="stat-box"><h3>{data.mentor.avgCommunication?.toFixed(1)}</h3><p>🗣 Комунікація</p></div>
 			</div>
 
 			<p class="mentor-bio">{data.mentor.bio}</p>
-			<p><strong>Rating:</strong> {data.mentor.rating}</p>
+			<p><strong>Рейтинг:</strong> {data.mentor.rating}</p>
 
 			<div class="rating-tooltip-wrapper">
-				<Stars
-					config={{
-			readOnly: true,
-			countStars: 5,
-			range: { min: 0, max: 5, step: 0.001 },
-			score: data.mentor.rating,
-			showScore: true,
-			scoreFormat: function () {
-				return `(${this.score.toFixed(1)}/5)`;
-			},
-			name: '',
-			starConfig: {
-				size: 24,
-				fillColor: '#FACC15',
-				strokeColor: '#D97706',
-				unfilledColor: '#E5E7EB',
-				strokeUnfilledColor: '#9CA3AF'
-			}
-		}}
-				/>
+				<Stars config={config} />
 				<span class="tooltip-icon" tabindex="0">❓
-		<div class="tooltip-content">
-			<p><strong>Як формується рейтинг?</strong></p>
-			<p>
-			 Рейтинг розраховується на основі оцінок з відгуків, активності ментора, залученості у спілкування, стабільності оцінок і досвіду на платформі.
-			</p>
-		</div>
-	</span>
-			</div>			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
+					<div class="tooltip-content">
+						<p><strong>Як формується рейтинг?</strong></p>
+						<p>
+							Рейтинг розраховується на основі оцінок з відгуків, активності ментора, залученості у спілкування, стабільності оцінок і досвіду на платформі.
+						</p>
+					</div>
+				</span>
+			</div>
+
+			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
 
 			{#if !alreadyRequested}
 				{#if !showMotivationForm}
-					<button class="btn" onclick={() => (showMotivationForm = true)}>
-						Request Mentorship
+					<button class="btn" on:click={() => (showMotivationForm = true)}>
+						Надіслати запит на менторство
 					</button>
 				{:else}
 					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
 						<form method="POST">
 							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
-							<label for="motivation"><strong>Your Motivation</strong></label>
+							<label for="motivation"><strong>Мотивація</strong></label>
 							<textarea
 								name="motivation"
 								id="motivation"
-								placeholder="Tell the mentor why you want to connect..."
+								placeholder="Розкажіть ментору, чому хочете приєднатися..."
 								required
 							></textarea>
-							<button type="submit" formaction="?/become" class="approve">✅ Approve</button>
+							<button type="submit" formaction="?/become" class="approve">✅ Підтвердити</button>
 						</form>
 					</div>
 				{/if}
 			{:else if alreadyMyMentor && !data.alreadyRated}
-
 				{#if !showRatingForm}
-					<button class="btn" onclick={() => (showRatingForm = true)}>
-						Rate Mentor
+					<button class="btn" on:click={() => (showRatingForm = true)}>
+						Оцінити ментора
 					</button>
 				{:else}
 					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
-						<form method="POST" >
+						<form method="POST">
 							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
 
-							<label><strong>Friendliness</strong></label>
-							<CustomStar
-								bind:value={friendliness}
-								readOnly={false}
-							/>
+							<label><strong>Привітність</strong></label>
+							<CustomStar bind:value={friendliness} readOnly={false} />
 
-							<label><strong>Knowledge</strong></label>
+							<label><strong>Знання</strong></label>
 							<CustomStar bind:value={knowledge} readOnly={false} />
 
-							<label><strong>Communication</strong></label>
+							<label><strong>Комунікація</strong></label>
 							<CustomStar bind:value={communication} readOnly={false} />
 
-							<label for="comment"><strong>Comment</strong></label>
+							<label for="comment"><strong>Коментар</strong></label>
 							<textarea
 								id="comment"
 								name="comment"
 								bind:value={comment}
-								placeholder="Your thoughts..."
+								placeholder="Ваші враження..."
 								rows="4"
 							></textarea>
 
@@ -211,20 +171,20 @@
 							<input type="hidden" name="knowledge" value={knowledge} />
 							<input type="hidden" name="communication" value={communication} />
 
-							<button type="submit" formaction="?/rate" class="approve">✅ Approve</button>
+							<button type="submit" formaction="?/rate" class="approve">✅ Підтвердити</button>
 						</form>
 					</div>
 				{/if}
-				{:else if data.alreadyRated}
-				<p class="already-requested">You already rated this mentor ✅</p>
+			{:else if data.alreadyRated}
+				<p class="already-requested">Ви вже оцінили цього ментора ✅</p>
 			{:else}
-				<p class="already-requested">You’ve already requested mentorship from this mentor ✅</p>
+				<p class="already-requested">Ви вже надіслали запит цьому ментору ✅</p>
 			{/if}
 		</div>
 
 		<hr style="margin: 3rem 0; width: 100%;" />
 
-		<h2 style="margin-bottom: 1rem;">Reviews</h2>
+		<h2 style="margin-bottom: 1rem;">Відгуки</h2>
 
 		{#if data.mentor.reviews?.length > 0}
 			{#each data.mentor.reviews as review}
@@ -233,15 +193,15 @@
 
 					<div class="review-ratings">
 						<div>
-							<p><strong>Friendliness:</strong></p>
+							<p><strong>Привітність:</strong></p>
 							<CustomStar value={review.friendliness} readOnly={true} />
 						</div>
 						<div>
-							<p><strong>Knowledge:</strong></p>
+							<p><strong>Знання:</strong></p>
 							<CustomStar value={review.knowledge} readOnly={true} />
 						</div>
 						<div>
-							<p><strong>Communication:</strong></p>
+							<p><strong>Комунікація:</strong></p>
 							<CustomStar value={review.communication} readOnly={true} />
 						</div>
 					</div>
@@ -252,7 +212,7 @@
 				</div>
 			{/each}
 		{:else}
-			<p>No reviews yet.</p>
+			<p>Відгуків поки немає.</p>
 		{/if}
 	</div>
 </main>

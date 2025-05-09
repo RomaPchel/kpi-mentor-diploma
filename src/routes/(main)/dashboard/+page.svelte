@@ -14,13 +14,13 @@
 </script>
 
 <main>
-	<h1>Welcome, {state.user.firstName}!</h1>
+	<h1>Вітаю, {state.user.firstName}!</h1>
 
 	{#if state.role === 'STUDENT'}
-		<p class="subtitle">Let’s find a mentor that fits you 🚀</p>
+		<p class="subtitle">Знайдемо ментора саме для вас 🚀</p>
 
 		{#if state.activeMentors?.length > 0}
-			<h2>Your Mentors</h2>
+			<h2>Ваші ментори</h2>
 			<div class="card-grid">
 				{#each state.activeMentors as mentor}
 					<div class="card">
@@ -28,20 +28,20 @@
 						<div class="card-body">
 							<h3>{mentor.name}</h3>
 							<p class="badge">{mentor.department}</p>
-							<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+							<p><strong>Інтереси:</strong> {mentor.interests?.join(', ')}</p>
 							<div class="subratings">
-								<span>😊 Friendliness: {mentor.avgFriendliness?.toFixed(1)}</span>
-								<span>🧠 Knowledge: {mentor.avgKnowledge?.toFixed(1)}</span>
-								<span>🗣 Communication: {mentor.avgCommunication?.toFixed(1)}</span>
+								<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>
+								<span>🧠 Обізнаність: {mentor.avgKnowledge?.toFixed(1)}</span>
+								<span>🗣 Комунікація: {mentor.avgCommunication?.toFixed(1)}</span>
 							</div>
-							<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+							<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>Переглянути профіль</a>
 						</div>
 					</div>
 				{/each}
 			</div>
 		{/if}
 
-		<h2>Suggested Mentors</h2>
+		<h2>Рекомендовані ментори</h2>
 		<div class="card-grid">
 			{#each state.availableMentors as mentor}
 				<div class="card">
@@ -75,34 +75,34 @@
               }}
 						/>
 						<div class="subratings">
-							<span>😊 Friendliness: {mentor.avgFriendliness?.toFixed(1)}</span>
-							<span>🧠 Knowledge: {mentor.avgKnowledge?.toFixed(1)}</span>
-							<span>🗣 Communication: {mentor.avgCommunication?.toFixed(1)}</span>
+							<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>
+							<span>🧠 Обізнаність: {mentor.avgKnowledge?.toFixed(1)}</span>
+							<span>🗣 Комунікація: {mentor.avgCommunication?.toFixed(1)}</span>
 						</div>
-						<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
+						<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>Переглянути профіль</a>
 					</div>
 				</div>
 			{/each}
 		</div>
 
 		<div class="actions">
-			<a class="btn secondary" href="/mentorship/find-mentor">🔍 Browse All Mentors</a>
+			<a class="btn secondary" href="/mentorship/find-mentor">🔍 Переглянути всіх менторів</a>
 		</div>
 
 	{:else if state.role === 'MENTOR'}
-		<p class="subtitle">Here’s what’s going on with your mentorships 💼</p>
+		<p class="subtitle">Ваші менторствa💼</p>
 		<div class="stats-grid">
-			<div class="stat-card"><h3>{state.stats.totalRequests}</h3><p>Pending Requests</p></div>
-			<div class="stat-card"><h3>{state.stats.activeMentees}</h3><p>Active Mentees</p></div>
+			<div class="stat-card"><h3>{state.stats.totalRequests}</h3><p>Запити</p></div>
+			<div class="stat-card"><h3>{state.stats.activeMentees}</h3><p>Студенти</p></div>
 		</div>
 		<div class="actions">
-			<a class="btn" href="/mentorship/mentee-requests">📬 View Requests</a>
-			<a class="btn secondary" href="/profile">👤 Update Profile</a>
+			<a class="btn" href="/mentorship/mentee-requests">📬 Переглянути запити</a>
+			<a class="btn secondary" href="/profile">👤 Оновити профіль</a>
 		</div>
 
 	{:else if state.role === 'ADMIN'}
-		<p class="subtitle">Mentor requests overview 📊</p>
-		<h2>All Mentor Requests</h2>
+		<p class="subtitle">Запити менторів 📊</p>
+		<h2>Усі запити</h2>
 		{#if state.allRequests.length > 0}
 			<div class="request-list">
 				{#each state.allRequests as req}
@@ -114,22 +114,22 @@
 								<p>{req.user.email}</p>
 							</div>
 						</div>
-						<p class="motivation"><strong>Motivation:</strong> {req.motivation}</p>
+						<p class="motivation"><strong>Мотивація:</strong> {req.motivation}</p>
 						<div class="actions">
 							<form method="POST">
 								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/approve" class="btn approve">✅ Approve</button>
+								<button type="submit" formaction="?/approve" class="btn approve">✅</button>
 							</form>
 							<form method="POST">
 								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/reject" class="btn reject">❌ Reject</button>
+								<button type="submit" formaction="?/reject" class="btn reject">❌</button>
 							</form>
 						</div>
 					</div>
 				{/each}
 			</div>
 		{:else}
-			<p>No mentor requests found.</p>
+			<p>Поки немає запитів.</p>
 		{/if}
 	{/if}
 </main>

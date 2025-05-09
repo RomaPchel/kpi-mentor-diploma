@@ -5,63 +5,63 @@ import type {
 } from '../../../../../../.svelte-kit/types/src/routes/(main)/mentorship/mentor-profile/[uuid]/$types.js';
 
 export const load: PageServerLoad = async ({ locals, cookies, params }) => {
-	const  uuid  = params.uuid;
+	const uuid = params.uuid;
 	const currentUser = locals.user;
-	let alreadyRequested = false
-	let alreadyMyMentor = false
-	const mentor = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/profile/${uuid}`, {
+
+	let alreadyRequested = false;
+	let alreadyMyMentor = false;
+	let alreadyRated = false;
+
+	// Fetch mentor profile
+	const mentorRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/profile/${uuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
 		}
-	})
+	});
 
-	if (!mentor) {
+	if (!mentorRes.ok) {
 		throw error(404, 'Mentor not found');
 	}
 
-	const mentorData = await mentor.json()
-	const request = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${mentorData.mentorUuid}`, {
+	const mentorData = await mentorRes.json();
+
+	// Check if a request was already made
+	const requestRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${mentorData.mentorUuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
 		}
-	})
+	});
+	if (requestRes.ok) {
+		alreadyRequested = true;
+	}
 
-
-	const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
+	// Check if this mentor is already active for the user
+	const myMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
 		headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
-	})
-	
-	const myMentors = await activeMentorsRes.json()
+	});
+	if (myMentorsRes.ok) {
+		const myMentors = await myMentorsRes.json();
+		alreadyMyMentor = Array.isArray(myMentors) &&
+			myMentors.some((mentor: { uuid: string }) => mentor.uuid === mentorData.uuid);
+	}
 
-	let alreadyRated = false;
+	// Check if current user already left a review
 	if (Array.isArray(mentorData.reviews)) {
 		alreadyRated = mentorData.reviews.some(
 			(r: any) => r.reviewer?.uuid === currentUser.uuid
 		);
 	}
 
-	if (!request.ok || !!myMentors.find(
-		(mentor: { uuid: string }) => mentor.uuid === mentorData.uuid
-	) ) {
-		alreadyRequested = true
-		alreadyMyMentor = true
-	}
-
-	if (!myMentors.find(
-		(mentor: { uuid: string }) => mentor.uuid === mentorData.mentorUuid
-	)){
-		alreadyRequested = false
-	}
-
 	return {
 		mentor: mentorData,
-		alreadyRequested: alreadyRequested,
-		alreadyMyMentor: alreadyMyMentor,
-		alreadyRated
+		alreadyRequested: true,
+		alreadyMyMentor: true,
+		alreadyRated: false
 	};
-}
+};
+;
 
 export const actions = {
 	become: async ({ request, cookies }) => {

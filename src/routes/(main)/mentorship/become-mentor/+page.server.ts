@@ -9,12 +9,12 @@ export const actions: Actions = {
 			const motivation = values.get('motivation') as string;
 
 			// Validate input
-			if (!motivation || motivation.trim().length < 50) {
-				return fail(400, {
-					success: false,
-					message: 'Motivation must be at least 50 characters'
-				});
-			}
+			// if (!motivation || motivation.trim().length < 50) {
+			// 	return fail(400, {
+			// 		success: false,
+			// 		message: 'Motivation must be at least 50 characters'
+			// 	});
+			// }
 
 			console.log(motivation);
 			// Make API request
