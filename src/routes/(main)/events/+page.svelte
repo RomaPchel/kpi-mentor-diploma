@@ -11,7 +11,16 @@
 		showCreateEventForm: false,
 		showEditEventForm: false,
 		selectedParticipants: [],
-		editingEvent: null
+		editingEvent: null,
+		filters: {
+			status: '',
+			minTimestamp: '',
+			maxTimestamp: '',
+			minCreatedAt: '',
+			maxCreatedAt: '',
+		},
+		sortBy: 'createdAt',
+		sortOrder: 'asc',
 	});
 
 	function createEvent() {
@@ -38,14 +47,98 @@
 		const tzOffset = date.getTimezoneOffset() * 60000;
 		return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 	}
+
+	function applyFilters() {
+		let filteredEvents = data.events ?? [];
+
+		if (state.filters.status) {
+			filteredEvents = filteredEvents.filter(event => event.status === state.filters.status);
+		}
+
+		if (state.filters.minTimestamp) {
+			const minTimestamp = new Date(state.filters.minTimestamp).getTime();
+			filteredEvents = filteredEvents.filter(event => event.timestamp >= minTimestamp);
+		}
+		if (state.filters.maxTimestamp) {
+			const maxTimestamp = new Date(state.filters.maxTimestamp).getTime();
+			filteredEvents = filteredEvents.filter(event => event.timestamp <= maxTimestamp);
+		}
+
+		if (state.filters.minCreatedAt) {
+			const minCreatedAt = new Date(state.filters.minCreatedAt).getTime();
+			filteredEvents = filteredEvents.filter(event => event.createdAt >= minCreatedAt);
+		}
+
+		if (state.filters.maxCreatedAt) {
+			const maxCreatedAt = new Date(state.filters.maxCreatedAt).getTime();
+			filteredEvents = filteredEvents.filter(event => event.createdAt <= maxCreatedAt);
+		}
+
+		filteredEvents = filteredEvents.sort((a, b) => {
+			const orderMultiplier = state.sortOrder === 'asc' ? 1 : -1;
+			if (state.sortBy === 'status') {
+				return (a.status > b.status ? 1 : -1) * orderMultiplier;
+			} else if (state.sortBy === 'timestamp') {
+				return (a.timestamp - b.timestamp) * orderMultiplier;
+			} else if (state.sortBy === 'createdAt') {
+				return (a.createdAt - b.createdAt) * orderMultiplier;
+			}
+			return 0;
+		});
+
+		state.events = filteredEvents;
+	}
+
+	function toggleSort(property: string) {
+		if (state.sortBy === property) {
+			state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			state.sortBy = property;
+			state.sortOrder = 'desc';
+		}
+		applyFilters();
+	}
 </script>
 
 <main>
 	<h1>Зустрічі</h1>
 
-	{#if state.role === 'MENTOR'}
-		<button on:click={createEvent} class="create-button">Створити зустріч</button>
-	{/if}
+	<div class="filters">
+		<label>
+			<strong>Статус:</strong>
+			<select bind:value={state.filters.status} on:change={applyFilters}>
+				<option value="">Усі</option>
+				<option value="planned">Заплановано</option>
+				<option value="completed">Виконано</option>
+				<option value="canceled">Скасовано</option>
+			</select>
+		</label>
+
+		<label>
+			<strong>Дата створення від:</strong>
+			<input type="datetime-local" bind:value={state.filters.minCreatedAt} on:change={applyFilters} />
+		</label>
+
+		<label>
+			<strong>Дата створення до:</strong>
+			<input type="datetime-local" bind:value={state.filters.maxCreatedAt} on:change={applyFilters} />
+		</label>
+
+		<label>
+			<strong>Дата зустрічі від:</strong>
+			<input type="datetime-local" bind:value={state.filters.minTimestamp} on:change={applyFilters} />
+		</label>
+
+		<label>
+			<strong>Дата зустрічі до:</strong>
+			<input type="datetime-local" bind:value={state.filters.maxTimestamp} on:change={applyFilters} />
+		</label>
+		<div class="sort">
+			<button on:click={() => toggleSort('status')}>Cтатус ({state.sortOrder === 'asc' ? '↑' : '↓'})</button>
+			<button on:click={() => toggleSort('timestamp')}>Дата зустрічі ({state.sortOrder === 'asc' ? '↑' : '↓'})</button>
+			<button on:click={() => toggleSort('createdAt')}>Дата створення ({state.sortOrder === 'asc' ? '↑' : '↓'})</button>
+		</div>
+	</div>
 	{#if state.events.length > 0}
 		<div class="card-container">
 			{#each state.events as event}
@@ -72,6 +165,9 @@
 		</div>
 	{:else}
 		<p>Івентів не знайдено</p>
+	{/if}
+	{#if state.role === 'MENTOR'}
+		<button on:click={createEvent} class="create-button">Створити зустріч</button>
 	{/if}
 </main>
 
@@ -183,6 +279,16 @@
         cursor: pointer;
         margin-bottom: 1.5rem;
         margin-top: 1.5rem;
+    }
+    .sort button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.3rem 1.0rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
     }
     .update-button {
         background-color: #0077cc;
@@ -297,4 +403,13 @@
         display: flex;
         gap: 1rem;
     }
+
+		.filters {
+				display: flex;
+				flex-direction: column;
+		}
+
+		.filters label {
+				margin-bottom: 1rem;
+		}
 </style>

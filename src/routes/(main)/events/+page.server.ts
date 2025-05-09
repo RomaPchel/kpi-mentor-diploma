@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
-export async function load({ parent, cookies }) {
+export async function load({ parent, cookies, url }) {
 	const parentData = await parent();
 	const user = parentData.user;
 	if (!user) throw redirect(303, '/login');
@@ -26,10 +26,22 @@ export async function load({ parent, cookies }) {
 	if (user.role === 'mentor') {
 		params.set('owner', user.uuid);
 	} else {
-		// Convert users array to a JSON string for proper query string format
 		params.set('users', JSON.stringify([user.uuid]));
 	}
-	console.log(params.toString());
+	const status = url.searchParams.get('status');
+	const minTimestamp = url.searchParams.get('minTimestamp');
+	const maxTimestamp = url.searchParams.get('maxTimestamp');
+
+	if (status) {
+		params.set('status', status);
+	}
+	if (minTimestamp) {
+		params.set('minTimestamp', minTimestamp);
+	}
+	if (maxTimestamp) {
+		params.set('maxTimestamp', maxTimestamp);
+	}
+
 	const events = await fetch(`${PUBLIC_SERVER_URL}/api/events?${params.toString()}`, {
 		method: 'GET',
 		headers: {
