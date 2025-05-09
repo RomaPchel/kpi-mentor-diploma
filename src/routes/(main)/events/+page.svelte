@@ -162,7 +162,7 @@
 	<div class="modal-backdrop" on:click={closeCreateModal}></div>
 	<div class="modal">
 		<h2>Нова зустріч</h2>
-		<form method="POST">
+		<form method="POST" >
 			<label>
 				<strong>Посилання:</strong>
 				<input name="url" type="text" required />
@@ -184,8 +184,8 @@
 			{/each}
 			<br />
 			<div class="actions">
-				<button class="create-form-button" type="submit" formaction="?/create">Create</button>
-				<button class="cancel-form-button" type="button" on:click={closeCreateModal}>Cancel</button>
+				<button class="create-form-button" type="submit" formaction="?/create">Створити</button>
+				<button class="cancel-form-button" type="button" on:click={closeCreateModal}>Назад</button>
 			</div>
 		</form>
 	</div>
@@ -237,7 +237,7 @@
 			{/each}
 			<br />
 			<div class="actions">
-				<button class="create-form-button" type="submit" formaction="?/update">Update</button>
+				<button class="edit-form-button" type="submit" formaction="?/update">Update</button>
 				<button class="cancel-form-button" type="button" on:click={closeEditModal}>Cancel</button>
 			</div>
 		</form>
@@ -301,6 +301,16 @@
         font-weight: bold;
     }
     .create-form-button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .edit-form-button {
         background-color: #0077cc;
         color: white;
         border: none;
