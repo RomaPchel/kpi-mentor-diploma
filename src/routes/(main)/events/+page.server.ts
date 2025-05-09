@@ -21,8 +21,16 @@ export async function load({ parent, cookies }) {
 		default:
 			throw redirect(303, '/unauthorized');
 	}
+	const params = new URLSearchParams();
 
-	const events = await fetch(`${PUBLIC_SERVER_URL}/api/events`, {
+	if (user.role === 'mentor') {
+		params.set('owner', user.uuid);
+	} else {
+		// Convert users array to a JSON string for proper query string format
+		params.set('users', JSON.stringify([user.uuid]));
+	}
+	console.log(params.toString());
+	const events = await fetch(`${PUBLIC_SERVER_URL}/api/events?${params.toString()}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`
@@ -51,7 +59,6 @@ export const actions = {
 	create: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();
 		const values = await clonedRequest.formData();
-		console.log(values);
 		const url = values.get('url') as string;
 		const timestampInput = values.get('timestamp') as string;
 		const timestamp = new Date(timestampInput).getTime().toString();

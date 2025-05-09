@@ -36,14 +36,16 @@
 	function formatLocalDate(timestamp: number | string) {
 		const date = new Date(timestamp);
 		const tzOffset = date.getTimezoneOffset() * 60000;
-		const localISO = new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
-		return localISO;
+		return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 	}
 </script>
 
 <main>
 	<h1>Зустрічі</h1>
 
+	{#if state.role === 'MENTOR'}
+		<button on:click={createEvent} class="create-button">Створити зустріч</button>
+	{/if}
 	{#if state.events.length > 0}
 		<div class="card-container">
 			{#each state.events as event}
@@ -61,18 +63,15 @@
 							<li>{participant.name}</li>
 						{/each}
 					</ul>
+					<p><strong>Створено:</strong> {new Date(event.createdAt).toLocaleString()}</p>
 					{#if state.role === 'MENTOR'}
-						<button on:click={() => editEvent(event)} class="create-button">Оновити</button>
+						<button on:click={() => editEvent(event)} class="update-button">Оновити</button>
 					{/if}
 				</div>
 			{/each}
 		</div>
 	{:else}
 		<p>Івентів не знайдено</p>
-	{/if}
-
-	{#if state.role === 'MENTOR'}
-		<button on:click={createEvent} class="create-button">Створити зустріч</button>
 	{/if}
 </main>
 
@@ -175,6 +174,17 @@
     }
 
     .create-button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .update-button {
         background-color: #0077cc;
         color: white;
         border: none;
