@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let data;
+	const {data} = $props()
+
+	console.log(data)
 </script>
 
 <main>
@@ -22,12 +24,12 @@
 
 					<div class="actions">
 						<form method="POST">
-							<input type="hidden" name="uuid" value={req.uuid} />
+							<input type="hidden" name="uuid" value={req.mentee.uuid} />
 							<button type="submit" formaction="?/approve" class="approve">✅ Схвалити</button>
 						</form>
 
 						<form method="POST">
-							<input type="hidden" name="uuid" value={req.uuid} />
+							<input type="hidden" name="uuid" value={req.mentee.uuid} />
 							<button type="submit" formaction="?/reject" class="reject">❌ Відхилити</button>
 						</form>
 					</div>

@@ -26,28 +26,29 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 
 	const mentorData = await mentorRes.json();
 
-	// Check if a request was already made
-	const requestRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${mentorData.mentorUuid}`, {
+	console.log(`${PUBLIC_SERVER_URL}/api/mentees/already-requested/${mentorData.mentorUuid}`)
+	const requestRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/already-requested/${mentorData.mentorUuid}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
 		}
 	});
+	console.log(requestRes);
+
 	if (requestRes.ok) {
 		alreadyRequested = true;
 	}
 
-	// Check if this mentor is already active for the user
 	const myMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
 		headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 	});
 	if (myMentorsRes.ok) {
 		const myMentors = await myMentorsRes.json();
+
 		alreadyMyMentor = Array.isArray(myMentors) &&
-			myMentors.some((mentor: { uuid: string }) => mentor.uuid === mentorData.uuid);
+			myMentors.some((mentor: { uuid: string }) => mentor.uuid === mentorData.mentorUuid);
 	}
 
-	// Check if current user already left a review
 	if (Array.isArray(mentorData.reviews)) {
 		alreadyRated = mentorData.reviews.some(
 			(r: any) => r.reviewer?.uuid === currentUser.uuid
@@ -56,9 +57,9 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 
 	return {
 		mentor: mentorData,
-		alreadyRequested: true,
-		alreadyMyMentor: true,
-		alreadyRated: false
+		alreadyRequested: alreadyRequested,
+		alreadyMyMentor: alreadyMyMentor,
+		alreadyRated: alreadyRated
 	};
 };
 ;

@@ -44,13 +44,6 @@
 		<h2>Рекомендовані ментори</h2>
 		<div class="card-grid">
 			{#each state.availableMentors as mentor}
-				<div class="mentor-card">
-					<img class="avatar" src={mentor.avatar}/>
-					<h3>{mentor.name}</h3>
-					<p>{mentor.department}</p>
-					<p>⭐ {mentor.rating}</p>
-					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
 				<div class="card">
 					<div class="level-badge">
 						<LevelBadge levelTitle={mentor.stats.levelTitle} level={mentor.stats.level} />
@@ -58,28 +51,27 @@
 					<img class="avatar" src={mentor.avatar} alt="mentor" />
 					<div class="card-body">
 						<h3>{mentor.name}</h3>
-
 						<p class="badge">{mentor.department}</p>
 						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
 						<Stars
 							config={{
-                readOnly: true,
-                countStars: 5,
-                range: { min: 0, max: 5, step: 0.001 },
-                score: mentor.rating,
-                showScore: true,
-                scoreFormat: function () {
-                  return `(${this.score.toFixed(1)}/5)`;
-                },
-                name: '',
-                starConfig: {
-                  size: 24,
-                  fillColor: '#FACC15',
-                  strokeColor: '#D97706',
-                  unfilledColor: '#E5E7EB',
-                  strokeUnfilledColor: '#9CA3AF'
-                }
-              }}
+          readOnly: true,
+          countStars: 5,
+          range: { min: 0, max: 5, step: 0.001 },
+          score: mentor.rating,
+          showScore: true,
+          scoreFormat: function () {
+            return `(${this.score.toFixed(1)}/5)`;
+          },
+          name: '',
+          starConfig: {
+            size: 24,
+            fillColor: '#FACC15',
+            strokeColor: '#D97706',
+            unfilledColor: '#E5E7EB',
+            strokeUnfilledColor: '#9CA3AF'
+          }
+        }}
 						/>
 						<div class="subratings">
 							<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>

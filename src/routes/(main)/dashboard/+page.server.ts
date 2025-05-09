@@ -14,6 +14,7 @@ export async function load({ parent, cookies }) {
 			}
 		})
 
+
 		const mentees = await fetch(`${PUBLIC_SERVER_URL}/api/mentees`, {
 			method: 'GET',
 			headers: {
@@ -23,6 +24,7 @@ export async function load({ parent, cookies }) {
 
 
 		const data = await requests.json();
+		console.log(data);
 
 		const menteesData = await mentees.json();
 		return {
@@ -31,14 +33,14 @@ export async function load({ parent, cookies }) {
 			requests: data.requests,
 			activeMentors: [],
 			stats: {
-				totalRequests: data.requests.length,
+				totalRequests: data.length,
 				activeMentees: menteesData.length,
 			}
 		};
 	}
 
 	if (user.role === 'admin') {
-		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
+		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/all`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		});
 
@@ -57,10 +59,11 @@ export async function load({ parent, cookies }) {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 			})
 
-		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/students`, {
+		const activeMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
 			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		})
+		console.log(activeMentorsRes);
 
 		const mentors = await mentorsRes.json();
 		const activeMentors = await activeMentorsRes.json();
@@ -95,7 +98,7 @@ export const actions = {
 		const data = await clonedRequest.formData();
 		const uuid = data.get('uuid')?.toString();
 
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -111,7 +114,7 @@ export const actions = {
 		const data = await clonedRequest.formData();
 		const uuid = data.get('uuid')?.toString();
 
-		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/request/${uuid}`, {
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/${uuid}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
