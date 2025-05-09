@@ -1,18 +1,20 @@
 <script lang="ts">
-	export let data;
+	const {data} = $props()
+
+	console.log(data)
 </script>
 
 <main>
-	<h1>Mentee Requests</h1>
+	<h1>Запити від cтудентів</h1>
 
 	{#if data.requests.length === 0}
-		<p>No new requests</p>
+		<p>Немає нових запитів</p>
 	{:else}
 		<div class="requests">
 			{#each data.requests as req}
 				<div class="card">
 					<div class="mentee">
-						<img src={req.mentee.avatar} alt="avatar" />
+						<img src={req.mentee.avatar} alt="аватар" />
 						<div>
 							<h3>{req.mentee.name}</h3>
 							<p>{req.mentee.email}</p>
@@ -22,13 +24,13 @@
 
 					<div class="actions">
 						<form method="POST">
-							<input type="hidden" name="uuid" value={req.uuid} />
-							<button type="submit" formaction="?/approve" class="approve">✅ Approve</button>
+							<input type="hidden" name="uuid" value={req.mentee.uuid} />
+							<button type="submit" formaction="?/approve" class="approve">✅ Схвалити</button>
 						</form>
 
 						<form method="POST">
-							<input type="hidden" name="uuid" value={req.uuid} />
-							<button type="submit" formaction="?/reject" class="reject">❌ Reject</button>
+							<input type="hidden" name="uuid" value={req.mentee.uuid} />
+							<button type="submit" formaction="?/reject" class="reject">❌ Відхилити</button>
 						</form>
 					</div>
 				</div>
@@ -36,6 +38,8 @@
 		</div>
 	{/if}
 </main>
+
+
 <style>
     .requests {
         display: flex;

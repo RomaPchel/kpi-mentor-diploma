@@ -144,29 +144,29 @@
 							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
 							<circle cx="12" cy="7" r="4"></circle>
 						</svg>
-						Personal Information
+						Особиста інформація
 					</a>
 					<a href="#academic-info" class="nav-item">
 						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 							<path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
 							<path d="M6 12v5c3 3 9 3 12 0v-5"></path>
 						</svg>
-						Academic Information
+						Академічна інформація
 					</a>
-					<a href="#account-settings" class="nav-item">
-						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="12" cy="12" r="3"></circle>
-							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-						</svg>
-						Account Settings
-					</a>
+<!--					<a href="#account-settings" class="nav-item">-->
+<!--						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">-->
+<!--							<circle cx="12" cy="12" r="3"></circle>-->
+<!--							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>-->
+<!--						</svg>-->
+<!--						Account Settings-->
+<!--					</a>-->
 				</div>
 			</div>
 
 			<div class="profile-form">
 				<form method="POST">
 					<section id="personal-info" class="form-section">
-						<h2>Personal Information</h2>
+						<h2>Особиста інформація</h2>
 						{#if form?.success}
 
 							<p>Successfully updated!</p>
@@ -177,19 +177,19 @@
 								class="btn btn-secondary"
 								disabled={saving || !formChanged}
 							>
-								Cancel
+								Скасувати
 							</button>
 							<button
 								type="submit"
 								class="btn btn-primary"
 								formaction="?/update"
 							>
-								{saving ? 'Saving...' : 'Save Changes'}
+								{saving ? 'Saving...' : 'Збрегти'}
 							</button>
 						</div>
 						<div class="form-row">
 							<div class="form-group">
-								<label for="firstName">First Name</label>
+								<label for="firstName">Імʼя</label>
 								<input
 									type="text"
 									id="firstName"
@@ -201,7 +201,7 @@
 							</div>
 
 							<div class="form-group">
-								<label for="lastName">Last Name</label>
+								<label for="lastName">Прізвище</label>
 								<input
 									type="text"
 									id="lastName"
@@ -214,7 +214,7 @@
 						</div>
 
 						<div class="form-group">
-							<label for="email">Email Address</label>
+							<label for="email">Email</label>
 							<input
 								type="email"
 								id="email"
@@ -223,11 +223,11 @@
 								oninput={updateFormState}
 								placeholder="Enter your email address"
 							/>
-							<small>This email is used for login and notifications</small>
+							<small>Ця пошта використовується для входу</small>
 						</div>
 
 						<div class="form-group">
-							<label for="bio">Bio</label>
+							<label for="bio">Біо</label>
 							<textarea
 								id="bio"
 								name="bio"
@@ -240,7 +240,7 @@
 					</section>
 
 					<section id="academic-info" class="form-section">
-						<h2>Academic Information</h2>
+						<h2>Академічна інформація</h2>
 
 						<div class="form-group">
 							<label for="specializationTitle">Спеціальність</label>
@@ -300,7 +300,7 @@
 							</div>
 
 						<div class="form-group">
-							<p>Academic Interests</p>
+							<p>Академічні інтереси</p>
 							<div class="interests-container">
 								{#each predefinedInterests as interest}
 									<button
@@ -315,26 +315,25 @@
 									<input type="hidden" name="interests" value={interest} />
 								{/each}
 							</div>
-							<small>This helps in matching you with suitable mentors or mentees</small>
 						</div>
 					</section>
 
-					<section id="account-settings" class="form-section">
-						<h2>Account Settings</h2>
+<!--					<section id="account-settings" class="form-section">-->
+<!--						<h2>Налаштування облікового запису</h2>-->
 
-						<div class="form-group">
-							<label for="change-password" class="password-label">
-								Password
-								<button type="button" class="btn-link">Change Password</button>
-							</label>
-							<input
-								type="password"
-								id="change-password"
-								value="••••••••"
-								disabled
-							/>
-						</div>
-					</section>
+<!--						<div class="form-group">-->
+<!--							<label for="change-password" class="password-label">-->
+<!--								Пароль-->
+<!--								<button type="button" class="btn-link">Змінити пароль</button>-->
+<!--							</label>-->
+<!--							<input-->
+<!--								type="password"-->
+<!--								id="change-password"-->
+<!--								value="••••••••"-->
+<!--								disabled-->
+<!--							/>-->
+<!--						</div>-->
+<!--					</section>-->
 				</form>
 			</div>
 		</div>

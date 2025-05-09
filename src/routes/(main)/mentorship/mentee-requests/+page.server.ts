@@ -12,9 +12,12 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		}
 	})
 
+
 	const data = await requests.json();
+	console.log(data.length);
+
 	return {
-		requests: data.requests,
+		requests: data,
 	};
 }
 
@@ -24,7 +27,7 @@ export const actions = {
 		const values = await clonedRequest.formData();
 		const uuid = values.get('uuid')?.toString();
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests/${uuid}/approve`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${uuid}/approve`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -32,7 +35,9 @@ export const actions = {
 			},
 		});
 
-		return redirect(303, '/chat');
+		if (response.ok) {
+			return redirect(303, '/chat');
+		}
 	},
 
 	reject: async ({ request, cookies }) => {
@@ -40,7 +45,7 @@ export const actions = {
 		const values = await clonedRequest.formData();
 		const uuid = values.get('uuid')?.toString();
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests/${uuid}/reject`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${uuid}/reject`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

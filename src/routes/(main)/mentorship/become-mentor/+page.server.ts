@@ -9,16 +9,16 @@ export const actions: Actions = {
 			const motivation = values.get('motivation') as string;
 
 			// Validate input
-			if (!motivation || motivation.trim().length < 50) {
-				return fail(400, {
-					success: false,
-					message: 'Motivation must be at least 50 characters'
-				});
-			}
+			// if (!motivation || motivation.trim().length < 50) {
+			// 	return fail(400, {
+			// 		success: false,
+			// 		message: 'Motivation must be at least 50 characters'
+			// 	});
+			// }
 
 			console.log(motivation);
 			// Make API request
-			const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
 				method: 'POST',
 				headers: {
 					"Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	try {
-		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
+		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
 			method: 'GET',
 			headers: {
 				"Authorization": `Bearer ${cookies.get('access_token')}`,
