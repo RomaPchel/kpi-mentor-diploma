@@ -18,7 +18,7 @@ export const actions: Actions = {
 
 			console.log(motivation);
 			// Make API request
-			const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
+			const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
 				method: 'POST',
 				headers: {
 					"Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const actions: Actions = {
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	try {
-		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request`, {
+		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/requests`, {
 			method: 'GET',
 			headers: {
 				"Authorization": `Bearer ${cookies.get('access_token')}`,

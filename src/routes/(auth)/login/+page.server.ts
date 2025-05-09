@@ -17,7 +17,7 @@ export const actions = {
 			body: JSON.stringify({ email: email, password: password })
 		});
 
-		if (response) {
+		if (response.ok) {
 			const body = await response.json();
 
 			console.log(body);
@@ -41,6 +41,12 @@ export const actions = {
 
 			throw redirect(303, '/dashboard');
 		}
-		return { success: false, error: 'Invalid credentials' };
+
+		const errorBody = await response.json();
+
+		return {
+			success: false,
+			error: errorBody
+		};
 	}
 };

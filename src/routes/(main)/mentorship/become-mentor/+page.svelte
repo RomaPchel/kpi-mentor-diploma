@@ -77,7 +77,6 @@
 		{/if}
 	</div>
 </main>
-
 <style>
     .mentor-request {
         background-color: #f8fafc;
@@ -255,7 +254,6 @@
     .pending-approval a:hover {
         text-decoration: underline;
     }
-
     @media (max-width: 640px) {
         .container {
             padding: 0 1rem;

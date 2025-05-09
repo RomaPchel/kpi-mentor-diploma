@@ -26,7 +26,6 @@ import Header from '$lib/components/Header.svelte';
 		</ul>
 	</section>
 </main>
-
 <style>
     :global(body) {
         margin: 0;
@@ -146,14 +145,5 @@ import Header from '$lib/components/Header.svelte';
         padding-left: 1.5rem;
         margin-top: 1rem;
         color: #555;
-    }
-
-    footer {
-        text-align: center;
-        padding: 1rem;
-        background: #fff;
-        border-top: 1px solid #eee;
-        font-size: 0.9rem;
-        color: #777;
     }
 </style>

@@ -1,0 +1,14 @@
+{
+  "USER_ALREADY_EXISTS": "Користувач вже існує",
+  "USER_DOES_NOT_EXIST": "Користувача не існує",
+  "USERS_DOES_NOT_EXIST": "Користувачей не існує",
+  "EVENT_DOES_NOT_EXIST": "Зустрічі не існує",
+  "REQUEST_ALREADY_EXISTS": "Заявка вже існує",
+  "REQUEST_DOES_NOT_EXIST": "Заявки не існує",
+  "PASSWORDS_DO_NOT_MATCH": "Паролі не співпадають",
+  "MENTOR_DOES_NOT_EXIST": "Ментора не існує",
+  "FORBIDDEN": "Немає дозволу",
+  "planned": "Заплановано",
+  "completed": "Виконано",
+  "canceled": "Скасовано"
+}

@@ -5,7 +5,7 @@ import type {
 } from '../../../../../.svelte-kit/types/src/routes/(main)/mentorship/mentee-requests/$types.js';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-requests`, {
+	const requests = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('access_token')}`,
@@ -24,7 +24,7 @@ export const actions = {
 		const values = await clonedRequest.formData();
 		const uuid = values.get('uuid')?.toString();
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${uuid}/approve`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests/${uuid}/approve`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export const actions = {
 		const values = await clonedRequest.formData();
 		const uuid = values.get('uuid')?.toString();
 
-		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/mentee-request/${uuid}/reject`, {
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/requests/${uuid}/reject`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

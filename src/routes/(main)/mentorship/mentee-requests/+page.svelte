@@ -36,7 +36,6 @@
 		</div>
 	{/if}
 </main>
-
 <style>
     .requests {
         display: flex;

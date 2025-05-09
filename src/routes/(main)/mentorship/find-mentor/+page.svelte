@@ -179,7 +179,6 @@
 		{/if}
 	</div>
 </main>
-
 <style>
     h1 {
         font-size: 2.25rem;

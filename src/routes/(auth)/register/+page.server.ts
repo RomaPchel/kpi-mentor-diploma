@@ -1,6 +1,20 @@
 import { redirect } from '@sveltejs/kit';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
+export async function load({ cookies }) {
+	const specialities = await fetch(`${PUBLIC_SERVER_URL}/api/specialities`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${cookies.get('access_token')}`
+		}
+	});
+
+	const data = await specialities.json();
+	return {
+		specialities: data
+	};
+}
+
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
 		const data = await request.formData();
@@ -9,7 +23,7 @@ export const actions = {
 		const password = data.get('password') as string;
 		const firstName = data.get('firstName') as string;
 		const lastName = data.get('lastName') as string;
-		const specializationTitle = data.get('specializationTitle') as string;
+		const specialization = data.get('specialization') as string;
 		const course = data.get('course') as string;
 		const formOfEducation = data.get('formOfEducation') as string;
 		const groupCode = data.get('groupCode') as string;
@@ -20,20 +34,20 @@ export const actions = {
 		const response = await fetch(`${PUBLIC_SERVER_URL}/api/auth/register`, {
 			method: 'POST',
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
 				email,
 				password,
 				firstName,
 				lastName,
-				specializationTitle,
+				specialization,
 				formOfEducation,
 				groupCode,
 				department,
 				interests,
-				course,
-			}),
+				course
+			})
 		});
 
 		if (response.ok) {
@@ -57,10 +71,11 @@ export const actions = {
 
 			throw redirect(303, '/dashboard');
 		}
+		const errorBody = await response.json();
 
 		return {
 			success: false,
-			error: 'Registration failed. Please check your data and try again.',
+			error: errorBody
 		};
 	}
 };
