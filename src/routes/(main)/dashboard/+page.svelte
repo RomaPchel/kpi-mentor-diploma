@@ -1,6 +1,7 @@
 <script lang="ts">
-
-	const {data} = $props()
+	import LevelBadge from '$lib/components/LevelBadge.svelte';
+	import Stars from '$lib/components/Stars.svelte';
+	const { data } = $props();
 
 	const state = $state({
 		user: data.user,
@@ -13,7 +14,6 @@
 </script>
 
 <main>
-
 	<h1>Welcome, {state.user.firstName}!</h1>
 
 	{#if state.role === 'STUDENT'}
@@ -21,22 +21,28 @@
 
 		{#if state.activeMentors?.length > 0}
 			<h2>Your Mentors</h2>
-			<div class="mentors-grid">
+			<div class="card-grid">
 				{#each state.activeMentors as mentor}
-					<div class="mentor-card">
-						<img class="avatar" src={mentor.avatar} />
-						<h3>{mentor.name}</h3>
-						<p>{mentor.department}</p>
-						<p>⭐ {mentor.rating}</p>
-						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
-						<a class="btn outline" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+					<div class="card">
+						<img class="avatar" src={mentor.avatar} alt="mentor" />
+						<div class="card-body">
+							<h3>{mentor.name}</h3>
+							<p class="badge">{mentor.department}</p>
+							<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+							<div class="subratings">
+								<span>😊 Friendliness: {mentor.avgFriendliness?.toFixed(1)}</span>
+								<span>🧠 Knowledge: {mentor.avgKnowledge?.toFixed(1)}</span>
+								<span>🗣 Communication: {mentor.avgCommunication?.toFixed(1)}</span>
+							</div>
+							<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+						</div>
 					</div>
 				{/each}
 			</div>
 		{/if}
 
 		<h2>Suggested Mentors</h2>
-		<div class="mentors-grid">
+		<div class="card-grid">
 			{#each state.availableMentors as mentor}
 				<div class="mentor-card">
 					<img class="avatar" src={mentor.avatar}/>
@@ -45,33 +51,67 @@
 					<p>⭐ {mentor.rating}</p>
 					<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
 					<a class="btn" href={`/mentorship/mentor-profile/${mentor.uuid}`}>View Profile</a>
+				<div class="card">
+					<div class="level-badge">
+						<LevelBadge levelTitle={mentor.stats.levelTitle} level={mentor.stats.level} />
+					</div>
+					<img class="avatar" src={mentor.avatar} alt="mentor" />
+					<div class="card-body">
+						<h3>{mentor.name}</h3>
+
+						<p class="badge">{mentor.department}</p>
+						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+						<Stars
+							config={{
+                readOnly: true,
+                countStars: 5,
+                range: { min: 0, max: 5, step: 0.001 },
+                score: mentor.rating,
+                showScore: true,
+                scoreFormat: function () {
+                  return `(${this.score.toFixed(1)}/5)`;
+                },
+                name: '',
+                starConfig: {
+                  size: 24,
+                  fillColor: '#FACC15',
+                  strokeColor: '#D97706',
+                  unfilledColor: '#E5E7EB',
+                  strokeUnfilledColor: '#9CA3AF'
+                }
+              }}
+						/>
+						<div class="subratings">
+							<span>😊 Friendliness: {mentor.avgFriendliness?.toFixed(1)}</span>
+							<span>🧠 Knowledge: {mentor.avgKnowledge?.toFixed(1)}</span>
+							<span>🗣 Communication: {mentor.avgCommunication?.toFixed(1)}</span>
+						</div>
+						<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>View Profile</a>
+					</div>
 				</div>
 			{/each}
 		</div>
 
 		<div class="actions">
-			<a class="btn outline" href="/mentorship/find-mentor">🔍 Browse All Mentors</a>
+			<a class="btn secondary" href="/mentorship/find-mentor">🔍 Browse All Mentors</a>
 		</div>
 
 	{:else if state.role === 'MENTOR'}
 		<p class="subtitle">Here’s what’s going on with your mentorships 💼</p>
-
-		<div class="mentor-stats">
-			<div class="card"><h3>{state.stats.totalRequests}</h3><p>Pending Requests</p></div>
-			<div class="card"><h3>{state.stats.activeMentees}</h3><p>Active Mentees</p></div>
+		<div class="stats-grid">
+			<div class="stat-card"><h3>{state.stats.totalRequests}</h3><p>Pending Requests</p></div>
+			<div class="stat-card"><h3>{state.stats.activeMentees}</h3><p>Active Mentees</p></div>
 		</div>
-
 		<div class="actions">
 			<a class="btn" href="/mentorship/mentee-requests">📬 View Requests</a>
-			<a class="btn outline" href="/profile">👤 Update Profile</a>
+			<a class="btn secondary" href="/profile">👤 Update Profile</a>
 		</div>
+
 	{:else if state.role === 'ADMIN'}
 		<p class="subtitle">Mentor requests overview 📊</p>
-
 		<h2>All Mentor Requests</h2>
-
 		{#if state.allRequests.length > 0}
-			<div class="requests">
+			<div class="request-list">
 				{#each state.allRequests as req}
 					<div class="card">
 						<div class="mentee">
@@ -82,16 +122,14 @@
 							</div>
 						</div>
 						<p class="motivation"><strong>Motivation:</strong> {req.motivation}</p>
-
 						<div class="actions">
 							<form method="POST">
 								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/approve" class="approve">✅ Approve</button>
+								<button type="submit" formaction="?/approve" class="btn approve">✅ Approve</button>
 							</form>
-
 							<form method="POST">
 								<input type="hidden" name="uuid" value={req.uuid} />
-								<button type="submit" formaction="?/reject" class="reject">❌ Reject</button>
+								<button type="submit" formaction="?/reject" class="btn reject">❌ Reject</button>
 							</form>
 						</div>
 					</div>
@@ -103,93 +141,186 @@
 	{/if}
 </main>
 <style>
-
     main {
-        max-width: 900px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 2rem 1rem;
+        font-family: 'Inter', sans-serif;
     }
 
     h1 {
-        font-size: 2rem;
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #1e293b;
+        text-align: center;
     }
 
     .subtitle {
-        color: #777;
-        margin-bottom: 1.5rem;
-    }
-
-    .mentors-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .mentor-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 1rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        color: #64748b;
+        margin-bottom: 2rem;
         text-align: center;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
     }
 
-    .avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 0.5rem;
-    }
-
-    .btn {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        background: #0070f3;
-        color: #fff;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .btn.outline {
-        background: transparent;
-        border: 1px solid #0070f3;
-        color: #0070f3;
-    }
-
-    .mentor-stats {
-        display: flex;
-        gap: 1rem;
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
         margin-bottom: 2rem;
     }
 
-    .mentor-stats .card {
-        flex: 1;
-        background: #fff;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    .card {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
+        transition: 0.2s ease-in-out;
+        position: relative;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+				margin-top: 50px;
+				border: 1px black solid;
+    }
+
+    .card-body {
+        width: 120%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .card-body h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .card-body p {
+        font-size: 0.95rem;
+        color: #475569;
+        line-height: 1.5;
+    }
+
+    .badge {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-secondary {
+        background-color: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .btn {
+        background-color: #4f46e5;
+        color: #ffffff;
+        padding: 0.6rem 1.25rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        text-align: center;
+        margin-top: 0.75rem;
+    }
+
+    .btn:hover {
+        background-color: #4338ca;
+        transform: translateY(-2px);
+    }
+
+    .btn.secondary {
+        background-color: transparent;
+        color: #4f46e5;
+        border: 2px solid #4f46e5;
+    }
+
+    .btn.secondary:hover {
+        background-color: rgba(79, 70, 229, 0.08);
+    }
+
+    .subratings {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 0.5rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background-color: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card p {
+        font-size: 1.125rem;
+        color: #475569;
     }
 
     .actions {
-        margin-top: 2rem;
         display: flex;
-        gap: 1rem;
         flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
     }
 
-    .requests {
+    .request-list {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
     }
 
-    .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    .request-list .card {
+        align-items: stretch;
+        text-align: left;
         padding: 1.5rem;
     }
 
@@ -201,38 +332,85 @@
     }
 
     .mentee img {
-        width: 60px;
-        height: 60px;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
         object-fit: cover;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .mentee h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .mentee p {
+        font-size: 0.95rem;
+        color: #475569;
     }
 
     .motivation {
         font-style: italic;
-        margin: 0.5rem 0;
+        color: #475569;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
     }
 
-    .actions {
-        margin-top: 1rem;
+    .request-list .actions {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
+        justify-content: flex-end;
     }
 
-    button {
-        border: none;
+    .request-list .actions button {
         padding: 0.5rem 1rem;
-        border-radius: 5px;
-        font-weight: bold;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        color: #ffffff;
+        border: none;
         cursor: pointer;
     }
 
+    .request-list .actions button:hover {
+        opacity: 0.9;
+    }
+
     .approve {
-        background-color: #4caf50;
-        color: white;
+        background-color: #16a34a;
     }
 
     .reject {
-        background-color: #f44336;
-        color: white;
+        background-color: #dc2626;
+    }
+
+    .level-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .card-grid,
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+    .approve {
+        background-color: #22c55e;
+    }
+
+    .reject {
+        background-color: #ef4444;
     }
 </style>

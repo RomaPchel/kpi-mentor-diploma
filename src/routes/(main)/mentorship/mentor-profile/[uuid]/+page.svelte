@@ -2,6 +2,7 @@
 	import Stars from '$lib/components/Stars.svelte';
 	import { fly } from 'svelte/transition';
 	import CustomStar from '$lib/components/CustomStar.svelte';
+	import LevelBadge from '$lib/components/LevelBadge.svelte';
 
 	const { data } = $props();
 
@@ -60,15 +61,30 @@
 </script>
 
 <main>
-	<div class="profile-header">
-		<a class="back-btn" href="/mentorship/find-mentor">&larr; Back to Mentors</a>
-		<h1>{data.mentor.name}</h1>
-	</div>
+
+	<a class="back-btn" href="/mentorship/find-mentor">&larr; Back to Mentors</a>
 
 	<div class="mentor-profile-card">
+		<div class="profile-header">
+			<div class="header-top">
+				<h1>{data.mentor.name}</h1>
+
+				{#if alreadyMyMentor}
+					<a class="feedback-btn" href={`/mentorship/mentor-profile/${data.mentor.mentorUuid}/feedback`}>
+						Report
+					</a>
+				{/if}
+			</div>
+		</div>
 		<img class="mentor-avatar" src={data.mentor.avatar} alt="{data.mentor.name} Avatar" />
+
 		<div class="mentor-details">
-			<h2>Specialization: {data.mentor.specialization}</h2>
+			<h2>
+				Specialization: {data.mentor.specialization}
+				{#if data.mentor.stats.level}
+					<LevelBadge levelTitle={data.mentor.stats.levelTitle} level={data.mentor.stats.level} />
+				{/if}
+			</h2>
 
 			{#if data.mentor.department}
 				<p><strong>Department:</strong> {data.mentor.department}</p>
@@ -79,12 +95,65 @@
 					<strong>Interests:</strong> {interestsArray.join(', ')}
 				</p>
 			{/if}
+			<h2 style="margin-top: 2rem;">📈 Mentor Dashboard</h2>
+
+			<div class="mentor-dashboard">
+
+				<div class="stat-box">
+					<h3>{data.mentor.stats.totalMentees}</h3>
+					<p>Active Mentees</p>
+				</div>
+				<div class="stat-box">
+					<h3>{data.mentor.stats.totalSessions}</h3>
+					<p>Total Sessions</p>
+				</div>
+				<div class="stat-box">
+					<h3>{data.mentor.avgFriendliness?.toFixed(1)}</h3>
+					<p>😊 Friendliness</p>
+				</div>
+				<div class="stat-box">
+					<h3>{data.mentor.avgKnowledge?.toFixed(1)}</h3>
+					<p>🧠 Knowledge</p>
+				</div>
+				<div class="stat-box">
+					<h3>{data.mentor.avgCommunication?.toFixed(1)}</h3>
+					<p>🗣 Communication</p>
+				</div>
+			</div>
 
 			<p class="mentor-bio">{data.mentor.bio}</p>
 			<p><strong>Rating:</strong> {data.mentor.rating}</p>
 
-			<Stars {config} />
-			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
+			<div class="rating-tooltip-wrapper">
+				<Stars
+					config={{
+			readOnly: true,
+			countStars: 5,
+			range: { min: 0, max: 5, step: 0.001 },
+			score: data.mentor.rating,
+			showScore: true,
+			scoreFormat: function () {
+				return `(${this.score.toFixed(1)}/5)`;
+			},
+			name: '',
+			starConfig: {
+				size: 24,
+				fillColor: '#FACC15',
+				strokeColor: '#D97706',
+				unfilledColor: '#E5E7EB',
+				strokeUnfilledColor: '#9CA3AF'
+			}
+		}}
+				/>
+				<span class="tooltip-icon" tabindex="0">❓
+		<div class="tooltip-content">
+			<p><strong>Як формується рейтинг?</strong></p>
+			<p>
+			 Рейтинг розраховується на основі оцінок з відгуків, активності ментора, залученості у спілкування, стабільності оцінок і досвіду на платформі.
+			</p>
+		</div>
+	</span>
+			</div>			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
 
 			{#if !alreadyRequested}
 				{#if !showMotivationForm}
@@ -107,6 +176,7 @@
 					</div>
 				{/if}
 			{:else if alreadyMyMentor && !data.alreadyRated}
+
 				{#if !showRatingForm}
 					<button class="btn" onclick={() => (showRatingForm = true)}>
 						Rate Mentor
@@ -151,6 +221,7 @@
 				<p class="already-requested">You’ve already requested mentorship from this mentor ✅</p>
 			{/if}
 		</div>
+
 		<hr style="margin: 3rem 0; width: 100%;" />
 
 		<h2 style="margin-bottom: 1rem;">Reviews</h2>
@@ -243,6 +314,7 @@
     }
 
     .mentor-profile-card {
+        position: relative;
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -284,6 +356,50 @@
         margin-top: 1.5rem;
     }
 
+    .mentor-dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1rem 0 2rem;
+        justify-content: center;
+    }
+
+    .mentor-level-badge {
+        background: linear-gradient(135deg, #4ade80, #22c55e);
+        color: white;
+        padding: 0.3rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 9999px;
+        margin-left: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+
+    .stat-box {
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        width: 150px;
+        text-align: center;
+    }
+
+    .stat-box h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #2563eb;
+    }
+
+    .stat-box p {
+        margin: 0.25rem 0 0;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+
     .btn {
         padding: 0.75rem 1.5rem;
         background: #0070f3;
@@ -319,5 +435,83 @@
         font-style: italic;
         color: #374151;
         margin-top: 0.5rem;
+    }
+
+
+    .header-top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .header-top {
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+        }
+    }
+
+
+    .feedback-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #f85757;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background 0.2s ease;
+        font-size: 0.85rem;
+    }
+
+    .feedback-btn:hover {
+        background: #fd7b7b;
+    }
+
+    .rating-tooltip-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .tooltip-icon {
+        cursor: pointer;
+        position: relative;
+        font-size: 0.875rem;
+        color: #6b7280;
+        user-select: none;
+    }
+
+    .tooltip-icon:hover .tooltip-content,
+    .tooltip-icon:focus .tooltip-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .tooltip-content {
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: white;
+        color: #1f2937;
+        border: 1px solid #d1d5db;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 260px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        z-index: 10;
+        font-size: 0.85rem;
+        line-height: 1.4;
     }
 </style>
