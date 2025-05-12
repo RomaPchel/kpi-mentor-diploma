@@ -12,57 +12,48 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 	let alreadyMyMentor = false;
 	let alreadyRated = false;
 
-	// Fetch mentor profile
+	const accessToken = cookies.get('access_token');
+
 	const mentorRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/profile/${uuid}`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${cookies.get('access_token')}`,
-		}
+		headers: { Authorization: `Bearer ${accessToken}` }
 	});
-
-	if (!mentorRes.ok) {
-		throw error(404, 'Mentor not found');
-	}
-
+	if (!mentorRes.ok) throw error(404, 'Mentor not found');
 	const mentorData = await mentorRes.json();
 
-	console.log(`${PUBLIC_SERVER_URL}/api/mentees/already-requested/${mentorData.mentorUuid}`)
+	// Check if the user already requested mentorship
 	const requestRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/already-requested/${mentorData.mentorUuid}`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${cookies.get('access_token')}`,
-		}
+		headers: { Authorization: `Bearer ${accessToken}` }
 	});
-	console.log(requestRes);
-
 	if (requestRes.ok) {
-		alreadyRequested = true;
+		const { requested } = await requestRes.json();
+		alreadyRequested = requested;
 	}
 
+	// Check if mentor is in mentee's list
 	const myMentorsRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/my-mentors`, {
-		headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
+		headers: { Authorization: `Bearer ${accessToken}` }
 	});
 	if (myMentorsRes.ok) {
 		const myMentors = await myMentorsRes.json();
-
 		alreadyMyMentor = Array.isArray(myMentors) &&
 			myMentors.some((mentor: { uuid: string }) => mentor.uuid === mentorData.mentorUuid);
 	}
 
+	// Check if user has already rated this mentor
 	if (Array.isArray(mentorData.reviews)) {
-		alreadyRated = mentorData.reviews.some(
-			(r: any) => r.reviewer?.uuid === currentUser.uuid
-		);
+		alreadyRated = mentorData.reviews.some((r: any) => r.reviewer?.uuid === currentUser.uuid);
 	}
 
+	console.log(alreadyRequested,
+		alreadyMyMentor,
+		alreadyRated)
 	return {
 		mentor: mentorData,
-		alreadyRequested: alreadyRequested,
-		alreadyMyMentor: alreadyMyMentor,
-		alreadyRated: alreadyRated
+		alreadyRequested,
+		alreadyMyMentor,
+		alreadyRated
 	};
 };
-;
 
 export const actions = {
 	become: async ({ request, cookies }) => {
@@ -123,7 +114,6 @@ export const actions = {
 			};
 		}
 
-		// ✅ Do this directly if you want to redirect:
 		return redirect(303, `/mentorship/mentor-profile/${mentorUuid}`);
 	}
 };

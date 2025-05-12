@@ -39,6 +39,8 @@
 					<div class="dropdown-menu" transition:slide>
 						<a href="/profile" class="dropdown-item">👤 Профіль</a>
 						<div class="dropdown-divider"></div>
+						<a href="/feedback" class="dropdown-item">👤 Відгук</a>
+						<div class="dropdown-divider"></div>
 						<a href="/logout" class="dropdown-item">🚪 Вийти</a>
 					</div>
 				{/if}

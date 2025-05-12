@@ -31,13 +31,11 @@
 	];
 
 	const ourPickMentor = data.mentors.find((m) => m.isHighlighted);
-	console.log(data.mentors)
+
 	const topMentors = [...data.mentors]
 		.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
 		.slice(0, 6)
 		.filter((m) => m !== ourPickMentor);
-
-	console.log(topMentors.length);
 
 	$effect(() => {
 		const searchLower = state.search.toLowerCase().trim();
@@ -54,11 +52,13 @@
 			state.minCommunication > 0;
 
 		if (!hasAnyFilter) {
-			state.filteredMentors = data.mentors;
+			state.filteredMentors = data.mentors.filter((m) => m !== ourPickMentor);
 			return;
 		}
 
 		state.filteredMentors = data.mentors.filter((mentor) => {
+			if (mentor === ourPickMentor) return false;
+
 			const interests = mentor.interests ?? [];
 			const department = mentor.department ?? '';
 			const specialization = mentor.specialization ?? '';
@@ -88,23 +88,7 @@
 	<h1>Знайти ментора</h1>
 	<div class="layout">
 		<aside class="left-panel">
-			{#if topMentors.length > 0}
-				<section class="leaderboard">
-					<h2>🏆 Топ ментори</h2>
-					<ul>
-						{#each topMentors as m, i}
-							<li class="leaderboard-item">
-								<span class="rank">#{i + 1}</span>
-								<img src={m.avatar || placeholderAvatar} alt="avatar" />
-								<div>
-									<strong>{m.name}</strong>
-									<div class="score">{m.rating?.toFixed(2)} ★</div>
-								</div>
-							</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
+
 			<form class="filter-panel">
 				<div class="form-group">
 					<label>Пошук</label>
@@ -157,9 +141,11 @@
 
 		<div class="right-panel">
 			{#if ourPickMentor}
-				<section class="our-pick">
-					<h2>👑 Наш вибір</h2>
-					<div class="card highlight">
+				<h2>👑 Наш вибір</h2>
+
+				<section class="highlight-and-leaderboard">
+
+					<div class="card-pick highlight">
 						<div class="level-badge">
 							<LevelBadge levelTitle={ourPickMentor.stats.levelTitle} level={ourPickMentor.stats.level} />
 						</div>
@@ -189,6 +175,24 @@
 							<a class="btn" href={`/mentorship/mentor-profile/${ourPickMentor.mentorUuid}`}>Переглянути профіль</a>
 						</div>
 					</div>
+
+					{#if topMentors.length > 0}
+						<section class="leaderboard">
+							<h2>🏆 Топ ментори</h2>
+							<ul>
+								{#each topMentors as m, i}
+									<li class="leaderboard-item">
+										<span class="rank">#{i + 1}</span>
+										<img src={m.avatar || placeholderAvatar} alt="avatar" />
+										<div>
+											<strong>{m.name}</strong>
+											<div class="score">{m.rating?.toFixed(2)} ★</div>
+										</div>
+									</li>
+								{/each}
+							</ul>
+						</section>
+					{/if}
 				</section>
 			{/if}
 
@@ -281,12 +285,9 @@
             width: 100%;
         }
     }
-    .our-pick {
-        margin-bottom: 2rem;
-				width: 30%;
-    }
 
-    .card.highlight {
+
+    .card-pick.highlight {
         border: 2px solid #facc15;
         background-color: #fefce8;
     }
@@ -296,7 +297,6 @@
         border: 1px solid #e5e7eb;
         border-radius: 0.75rem;
         padding: 1rem;
-        margin: 2rem 0;
     }
 
     .leaderboard h2 {
@@ -419,6 +419,20 @@
         min-height: 400px;
     }
 
+    .card-pick {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        transition: 0.2s ease-in-out;
+        position: relative;
+        min-height: 400px;
+    }
+
     .card:hover {
         transform: translateY(-4px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -502,4 +516,15 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .highlight-and-leaderboard {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+
+
+
 </style>

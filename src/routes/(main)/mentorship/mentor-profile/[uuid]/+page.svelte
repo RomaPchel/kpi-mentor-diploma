@@ -8,6 +8,12 @@
 
 	let interestsArray: string[] = data.mentor.interests;
 	let showMotivationForm = $state(false);
+	let showRatingForm = $state(false);
+
+	let friendliness = $state(0);
+	let knowledge = $state(0);
+	let communication = $state(0);
+	let comment = $state('');
 
 	const config = {
 		readOnly: true,
@@ -19,7 +25,7 @@
 		},
 		score: data.mentor.rating,
 		showScore: true,
-		scoreFormat: function () {
+		scoreFormat() {
 			return `(${this.score}/${this.countStars})`;
 		},
 		name: '',
@@ -34,30 +40,7 @@
 
 	const alreadyRequested = data.alreadyRequested;
 	const alreadyMyMentor = data.alreadyMyMentor;
-
-	let showRatingForm = $state(false); // ⭐
-
-	let friendliness = $state(0);
-	let knowledge =  $state(0);
-	let communication =  $state(0);
-	let comment =  $state('');
-
-	console.log(friendliness);
-
-	function updateScore(type: 'friendliness' | 'knowledge' | 'communication', value: number) {
-		switch (type) {
-			case 'friendliness':
-				friendliness = value;
-				break;
-			case 'knowledge':
-				knowledge = value;
-				break;
-			case 'communication':
-				communication = value;
-				break;
-		}
-		console.log(`${type} updated to`, value);
-	}
+	const alreadyRated = data.alreadyRated;
 </script>
 
 <main>
@@ -119,29 +102,9 @@
 
 			<p><strong>Кількість відгуків:</strong> {data.mentor.totalReviews}</p>
 
-			{#if !alreadyRequested}
-				{#if !showMotivationForm}
-					<button class="btn" on:click={() => (showMotivationForm = true)}>
-						Надіслати запит на менторство
-					</button>
-				{:else}
-					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
-						<form method="POST">
-							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
-							<label for="motivation"><strong>Мотивація</strong></label>
-							<textarea
-								name="motivation"
-								id="motivation"
-								placeholder="Розкажіть ментору, чому хочете приєднатися..."
-								required
-							></textarea>
-							<button type="submit" formaction="?/become" class="approve">✅ Підтвердити</button>
-						</form>
-					</div>
-				{/if}
-			{:else if alreadyMyMentor && !data.alreadyRated}
+			{#if alreadyMyMentor && !alreadyRated}
 				{#if !showRatingForm}
-					<button class="btn" on:click={() => (showRatingForm = true)}>
+					<button class="btn" onclick={() => (showRatingForm = true)}>
 						Оцінити ментора
 					</button>
 				{:else}
@@ -175,10 +138,30 @@
 						</form>
 					</div>
 				{/if}
-			{:else if data.alreadyRated}
+			{:else if alreadyMyMentor && alreadyRated}
 				<p class="already-requested">Ви вже оцінили цього ментора ✅</p>
-			{:else}
+			{:else if !alreadyMyMentor && alreadyRequested}
 				<p class="already-requested">Ви вже надіслали запит цьому ментору ✅</p>
+			{:else}
+				{#if !showMotivationForm}
+					<button class="btn" onclick={() => (showMotivationForm = true)}>
+						Надіслати запит на менторство
+					</button>
+				{:else}
+					<div class="motivation-form" transition:fly={{ y: 10, duration: 250 }}>
+						<form method="POST">
+							<input type="hidden" name="mentorUuid" value={data.mentor.mentorUuid} />
+							<label for="motivation"><strong>Мотивація</strong></label>
+							<textarea
+								name="motivation"
+								id="motivation"
+								placeholder="Розкажіть ментору, чому хочете приєднатися..."
+								required
+							></textarea>
+							<button type="submit" formaction="?/become" class="approve">✅ Підтвердити</button>
+						</form>
+					</div>
+				{/if}
 			{/if}
 		</div>
 
@@ -187,7 +170,7 @@
 		<h2 style="margin-bottom: 1rem;">Відгуки</h2>
 
 		{#if data.mentor.reviews?.length > 0}
-			{#each data.mentor.reviews as review}
+			{#each data.mentor.reviews as review, index (index)}
 				<div class="review-card">
 					<h3>{review.reviewer?.firstName} {review.reviewer?.lastName}</h3>
 
@@ -216,6 +199,7 @@
 		{/if}
 	</div>
 </main>
+
 <style>
     textarea {
         width: 100%;
