@@ -9,7 +9,9 @@
 		availableMentors: data.availableMentors ?? [],
 		activeMentors: data.activeMentors ?? [],
 		stats: data.stats ?? null,
-		allRequests: data.allRequests ?? []
+		allRequests: data.allRequests ?? [],
+		allFeedbacks: data.allFeedbacks ?? [],
+		allReports: data.allReports ?? []
 	});
 </script>
 
@@ -52,7 +54,7 @@
 					<div class="card-body">
 						<h3>{mentor.name}</h3>
 						<p class="badge">{mentor.department}</p>
-						<p><strong>Interests:</strong> {mentor.interests?.join(', ')}</p>
+						<p><strong>Інтереси:</strong> {mentor.interests?.join(', ')}</p>
 						<Stars
 							config={{
           readOnly: true,
@@ -98,6 +100,23 @@
 			<a class="btn" href="/mentorship/mentee-requests">📬 Переглянути запити</a>
 			<a class="btn secondary" href="/profile">👤 Оновити профіль</a>
 		</div>
+		<div class="rating-explainer">
+			<h3>🧮 Як розраховується ваш рейтинг?</h3>
+			<p>
+				Ваш рейтинг — це не лише середнє арифметичне відгуків. Ми враховуємо такі фактори:
+			</p>
+			<ul>
+				<li><strong>Вага відгуку:</strong> новіші відгуки мають більший вплив (експоненційне згасання).</li>
+				<li><strong>Баєсівська оцінка:</strong> враховується середнє значення всіх рейтингів з урахуванням упередженості.</li>
+				<li><strong>Залученість:</strong> чим більше сесій, тим вищий engagement-коефіцієнт.</li>
+				<li><strong>Стабільність:</strong> менш варіативні оцінки підвищують рейтинг.</li>
+				<li><strong>Активність:</strong> заповнений профіль, активність у чаті та відповіді також враховуються.</li>
+				<li><strong>Досвід:</strong> чим довше ви з нами, тим більше впливає ваш досвід.</li>
+			</ul>
+			<p>
+				Рейтинг оновлюється автоматично після нових відгуків. Якщо у вас є питання — не соромтесь звернутись до адміністрації!
+			</p>
+		</div>
 
 	{:else if state.role === 'ADMIN'}
 		<p class="subtitle">Запити менторів 📊</p>
@@ -109,7 +128,7 @@
 						<div class="mentee">
 							<img src={req.user.avatar} alt="avatar" />
 							<div>
-								<h3>{req.user.name}</h3>
+								<h3>{req.user.firstName}</h3>
 								<p>{req.user.email}</p>
 							</div>
 						</div>
@@ -130,6 +149,44 @@
 		{:else}
 			<p>Поки немає запитів.</p>
 		{/if}
+		{#if state.allFeedbacks?.length > 0}
+			<h2>Відгуки</h2>
+			{#each state.allFeedbacks as fb (fb.uuid)}
+				<div class="card {fb.reviewed ? 'reviewed' : 'unreviewed'}">
+					<p><strong>Від:</strong> {fb.user.firstName} {fb.user.lastName} ({fb.user.email})</p>
+					<p><strong>Коментар:</strong> {fb.message}</p>
+
+					{#if !fb.reviewed}
+						<form method="POST">
+							<input type="hidden" name="uuid" value={fb.uuid} />
+							<button type="submit" formaction="?/markFeedbackReviewed" class="btn small">✅ Відмітити як переглянутий</button>
+						</form>
+					{:else}
+						<p class="reviewed-label">✅ Переглянуто</p>
+					{/if}
+				</div>
+			{/each}
+		{/if}
+
+		{#if state.allReports?.length > 0}
+			<h2>Скарги</h2>
+			{#each state.allReports as report (report.id)}
+				<div class="card">
+					<p><strong>Від:</strong> {report.author.firstName} {report.author.lastName} ({report.author.email})</p>
+					<p><strong>На ментора:</strong> {report.mentor.mentor.firstName} ({report.mentor.mentor.email})</p>
+					<p><strong>Причина:</strong> {report.message}</p>
+					{#if !report.reviewed}
+						<form method="POST">
+							<input type="hidden" name="uuid" value={report.uuid} />
+							<button type="submit" formaction="?/markReportReviewed" class="btn small">✅ Відмітити як переглянутий</button>
+						</form>
+					{:else}
+						<p class="reviewed-label">✅ Переглянуто</p>
+					{/if}
+				</div>
+
+			{/each}
+		{/if}
 	{/if}
 </main>
 <style>
@@ -139,6 +196,7 @@
         padding: 2rem 1rem;
         font-family: 'Inter', sans-serif;
     }
+
 
     h1 {
         font-size: 2.25rem;
@@ -405,4 +463,32 @@
     .reject {
         background-color: #ef4444;
     }
+
+    .rating-explainer {
+        background-color: #fefce8;
+        border: 1px solid #facc15;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .rating-explainer h3 {
+        margin-top: 0;
+        color: #b45309;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .rating-explainer ul {
+        padding-left: 1.25rem;
+        margin: 1rem 0;
+        list-style: disc;
+    }
+
+    .rating-explainer li {
+        margin-bottom: 0.5rem;
+    }
+
 </style>

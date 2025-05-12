@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export async function load({ parent, cookies }) {
@@ -14,6 +14,7 @@ export async function load({ parent, cookies }) {
 			}
 		})
 
+		console.log(requests);
 
 		const mentees = await fetch(`${PUBLIC_SERVER_URL}/api/mentees`, {
 			method: 'GET',
@@ -24,7 +25,6 @@ export async function load({ parent, cookies }) {
 
 
 		const data = await requests.json();
-		console.log(data);
 
 		const menteesData = await mentees.json();
 		return {
@@ -43,13 +43,27 @@ export async function load({ parent, cookies }) {
 		const allRequests = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/become-mentor-request/all`, {
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		});
+		const allFeedbacks = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/feedbacks`, {
+			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
+		});
+		const allReports = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/reports`, {
+			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
+		});
 
-		const requestsData = await allRequests.json();
+
+		const [requestsData, feedbacksData, reportsData] = await Promise.all([
+			allRequests.json(),
+			allFeedbacks.json(),
+			allReports.json()
+		]);
+
 
 		return {
 			role: 'ADMIN',
 			user,
-			allRequests: requestsData ?? []
+			allRequests: requestsData ?? [],
+			allFeedbacks: feedbacksData ?? [],
+			allReports: reportsData ?? []
 		};
 	}
 
@@ -63,7 +77,6 @@ export async function load({ parent, cookies }) {
 			method: 'GET',
 			headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
 		})
-		console.log(activeMentorsRes);
 
 		const mentors = await mentorsRes.json();
 		const activeMentors = await activeMentorsRes.json();
@@ -125,5 +138,41 @@ export const actions = {
 		});
 
 		return redirect(303, '/dashboard');
-	}
+	},
+
+	markFeedbackReviewed: async ({ request, cookies }) => {
+		const clonedRequest = request.clone();
+		const data = await clonedRequest.formData();
+		const uuid = data.get('uuid')?.toString();
+
+		if (!uuid) return fail(400, { error: 'Missing UUID' });
+
+		await fetch(`${PUBLIC_SERVER_URL}/api/mentors/${uuid}/feedback`, {
+			method: 'PUT',
+			headers: {
+				Authorization: `Bearer ${cookies.get('access_token')}`,
+			}
+		});
+
+		return { success: true };
+	},
+
+	markReportReviewed: async ({ request, cookies }) => {
+		const clonedRequest = request.clone();
+		const data = await clonedRequest.formData();
+		const uuid = data.get('uuid')?.toString();
+
+		console.log(uuid)
+		if (!uuid) return fail(400, { error: 'Missing UUID' });
+
+		const res = await fetch(`${PUBLIC_SERVER_URL}/api/mentors/${uuid}/report`, {
+			method: 'PUT',
+			headers: {
+				Authorization: `Bearer ${cookies.get('access_token')}`,
+			}
+		});
+
+		console.log(res)
+		return { success: true };
+	},
 };

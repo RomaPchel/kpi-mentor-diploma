@@ -30,6 +30,13 @@
 		'Тестування'
 	];
 
+	const ourPickMentor = data.mentors.find((m) => m.isHighlighted);
+
+	const topMentors = [...data.mentors]
+		.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+		.slice(0, 6)
+		.filter((m) => m !== ourPickMentor);
+
 	$effect(() => {
 		const searchLower = state.search.toLowerCase().trim();
 		const interestLower = state.interest.toLowerCase().trim();
@@ -45,11 +52,13 @@
 			state.minCommunication > 0;
 
 		if (!hasAnyFilter) {
-			state.filteredMentors = data.mentors;
+			state.filteredMentors = data.mentors.filter((m) => m !== ourPickMentor);
 			return;
 		}
 
 		state.filteredMentors = data.mentors.filter((mentor) => {
+			if (mentor === ourPickMentor) return false;
+
 			const interests = mentor.interests ?? [];
 			const department = mentor.department ?? '';
 			const specialization = mentor.specialization ?? '';
@@ -77,71 +86,131 @@
 
 <main>
 	<h1>Знайти ментора</h1>
-
 	<div class="layout">
-		<form class="filter-panel">
-			<div class="form-group">
-				<label>Пошук</label>
-				<input type="text" placeholder="Ім'я" bind:value={state.search} />
-			</div>
+		<aside class="left-panel">
 
-			<div class="form-group">
-				<label>Факультет</label>
-				<input type="text" placeholder="наприклад, Комп'ютерні науки" bind:value={state.department} />
-			</div>
+			<form class="filter-panel">
+				<div class="form-group">
+					<label>Пошук</label>
+					<input type="text" placeholder="Ім'я" bind:value={state.search} />
+				</div>
 
-			<div class="form-group">
-				<label>Інтерес</label>
-				<select bind:value={state.interest}>
-					<option value="">-- Оберіть інтерес --</option>
-					{#each predefinedInterests as interest}
-						<option value={interest}>{interest}</option>
-					{/each}
-				</select>
-			</div>
+				<div class="form-group">
+					<label>Факультет</label>
+					<input type="text" placeholder="наприклад, Комп'ютерні науки" bind:value={state.department} />
+				</div>
 
-			<div class="form-group">
-				<label>Мінімальний рейтинг</label>
-				<input type="range" min="0" max="5" step="0.5" bind:value={state.minRating} />
-				<small>{state.minRating} зірок</small>
-			</div>
+				<div class="form-group">
+					<label>Інтерес</label>
+					<select bind:value={state.interest}>
+						<option value="">-- Оберіть інтерес --</option>
+						{#each predefinedInterests as interest}
+							<option value={interest}>{interest}</option>
+						{/each}
+					</select>
+				</div>
 
-			<hr />
+				<div class="form-group">
+					<label>Мінімальний рейтинг</label>
+					<input type="range" min="0" max="5" step="0.5" bind:value={state.minRating} />
+					<small>{state.minRating} зірок</small>
+				</div>
 
-			<div class="form-group">
-				<label>Мінімальна привітність</label>
-				<input type="range" min="0" max="5" step="0.5" bind:value={state.minFriendliness} />
-				<small>{state.minFriendliness} / 5</small>
-			</div>
+				<hr />
 
-			<div class="form-group">
-				<label>Мінімальні знання</label>
-				<input type="range" min="0" max="5" step="0.5" bind:value={state.minKnowledge} />
-				<small>{state.minKnowledge} / 5</small>
-			</div>
+				<div class="form-group">
+					<label>Мінімальна привітність</label>
+					<input type="range" min="0" max="5" step="0.5" bind:value={state.minFriendliness} />
+					<small>{state.minFriendliness} / 5</small>
+				</div>
 
-			<div class="form-group">
-				<label>Мінімальна комунікація</label>
-				<input type="range" min="0" max="5" step="0.5" bind:value={state.minCommunication} />
-				<small>{state.minCommunication} / 5</small>
-			</div>
-		</form>
+				<div class="form-group">
+					<label>Мінімальні знання</label>
+					<input type="range" min="0" max="5" step="0.5" bind:value={state.minKnowledge} />
+					<small>{state.minKnowledge} / 5</small>
+				</div>
 
-		{#if state.filteredMentors.length > 0}
-			<div class="card-grid">
-				{#each state.filteredMentors as mentor}
-					<div class="card">
+				<div class="form-group">
+					<label>Мінімальна комунікація</label>
+					<input type="range" min="0" max="5" step="0.5" bind:value={state.minCommunication} />
+					<small>{state.minCommunication} / 5</small>
+				</div>
+			</form>
+
+		</aside>
+
+		<div class="right-panel">
+			{#if ourPickMentor}
+				<h2>👑 Наш вибір</h2>
+
+				<section class="highlight-and-leaderboard">
+
+					<div class="card-pick highlight">
 						<div class="level-badge">
-							<LevelBadge levelTitle={mentor.stats.levelTitle} level={mentor.stats.level} />
+							<LevelBadge levelTitle={ourPickMentor.stats.levelTitle} level={ourPickMentor.stats.level} />
 						</div>
-						<img class="avatar" src={mentor.avatar} alt="mentor" />
+						<img class="avatar" src={ourPickMentor.avatar || placeholderAvatar} alt="mentor" />
 						<div class="card-body">
-							<h3>{mentor.name}</h3>
+							<h3>{ourPickMentor.name}</h3>
+							<p class="badge">{ourPickMentor.department}</p>
+							<p><strong>Інтереси:</strong> {ourPickMentor.interests?.join(', ')}</p>
+							<Stars config={{
+								readOnly: true,
+								countStars: 5,
+								range: { min: 0, max: 5, step: 0.001 },
+								score: ourPickMentor.rating,
+								showScore: true,
+								scoreFormat: function () {
+									return `(${this.score.toFixed(1)}/5)`;
+								},
+								name: '',
+								starConfig: {
+									size: 24,
+									fillColor: '#FACC15',
+									strokeColor: '#D97706',
+									unfilledColor: '#E5E7EB',
+									strokeUnfilledColor: '#9CA3AF'
+								}
+							}} />
+							<a class="btn" href={`/mentorship/mentor-profile/${ourPickMentor.mentorUuid}`}>Переглянути профіль</a>
+						</div>
+					</div>
 
-							<p class="badge">{mentor.department}</p>
-							<p><strong>Інтереси:</strong> {mentor.interests?.join(', ')}</p>
-							<Stars
-								config={{
+					{#if topMentors.length > 0}
+						<section class="leaderboard">
+							<h2>🏆 Топ ментори</h2>
+							<ul>
+								{#each topMentors as m, i}
+									<li class="leaderboard-item">
+										<span class="rank">#{i + 1}</span>
+										<img src={m.avatar || placeholderAvatar} alt="avatar" />
+										<div>
+											<strong>{m.name}</strong>
+											<div class="score">{m.rating?.toFixed(2)} ★</div>
+										</div>
+									</li>
+								{/each}
+							</ul>
+						</section>
+					{/if}
+				</section>
+			{/if}
+
+			{#if state.filteredMentors.length > 0}
+				<div class="card-grid">
+					{#each state.filteredMentors as mentor}
+						<div class="card">
+							<div class="level-badge">
+								<LevelBadge levelTitle={mentor.stats.levelTitle} level={mentor.stats.level} />
+							</div>
+							<img class="avatar" src={mentor.avatar} alt="mentor" />
+							<div class="card-body">
+								<h3>{mentor.name}</h3>
+
+								<p class="badge">{mentor.department}</p>
+								<p><strong>Інтереси:</strong> {mentor.interests?.join(', ')}</p>
+								<Stars
+									config={{
                   readOnly: true,
                   countStars: 5,
                   range: { min: 0, max: 5, step: 0.001 },
@@ -159,28 +228,113 @@
                     strokeUnfilledColor: '#9CA3AF'
                   }
                 }}
-							/>
-							<div class="subratings">
-								<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>
-								<span>🧠 Знання: {mentor.avgKnowledge?.toFixed(1)}</span>
-								<span>🗣 Комунікація: {mentor.avgCommunication?.toFixed(1)}</span>
+								/>
+								<div class="subratings">
+									<span>😊 Привітність: {mentor.avgFriendliness?.toFixed(1)}</span>
+									<span>🧠 Знання: {mentor.avgKnowledge?.toFixed(1)}</span>
+									<span>🗣 Комунікація: {mentor.avgCommunication?.toFixed(1)}</span>
+								</div>
+								<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>Переглянути профіль</a>
 							</div>
-							<a class="btn" href={`/mentorship/mentor-profile/${mentor.mentorUuid}`}>Переглянути профіль</a>
 						</div>
-					</div>
-				{/each}
-			</div>
-		{:else}
-			<div class="no-results">
-				<p>Ментори не знайдені за заданими фільтрами.</p>
-				<p>Спробуйте змінити фільтри або розширити пошук.</p>
-			</div>
-		{/if}
+					{/each}
+				</div>
+			{:else}
+				<div class="no-results">
+					<p>Ментори не знайдені за заданими фільтрами.</p>
+					<p>Спробуйте змінити фільтри або розширити пошук.</p>
+				</div>
+			{/if}
+		</div>
 	</div>
 </main>
 
-
 <style>
+    .layout {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .left-panel {
+        width: 280px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .right-panel {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .layout {
+            flex-direction: column;
+        }
+
+        .left-panel {
+            width: 100%;
+        }
+
+        .right-panel {
+            width: 100%;
+        }
+    }
+
+
+    .card-pick.highlight {
+        border: 2px solid #facc15;
+        background-color: #fefce8;
+    }
+
+    .leaderboard {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1rem;
+    }
+
+    .leaderboard h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .leaderboard ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .leaderboard-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .leaderboard-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 9999px;
+        object-fit: cover;
+        border: 1px solid #d1d5db;
+    }
+
+    .leaderboard-item .rank {
+        font-weight: bold;
+        color: #facc15;
+        font-size: 1.1rem;
+    }
+
+    .leaderboard-item .score {
+        font-size: 0.9rem;
+        color: #475569;
+    }
     h1 {
         font-size: 2.25rem;
         text-align: center;
@@ -242,6 +396,8 @@
         padding: 2rem 1rem;
     }
 
+
+
     .card-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -254,6 +410,20 @@
         border-radius: 0.75rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        transition: 0.2s ease-in-out;
+        position: relative;
+        min-height: 400px;
+    }
+
+    .card-pick {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -346,4 +516,15 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .highlight-and-leaderboard {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+
+
+
 </style>

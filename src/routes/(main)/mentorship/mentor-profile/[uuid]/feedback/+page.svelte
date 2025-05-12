@@ -16,42 +16,42 @@
 </script>
 
 <main>
-	<h1>Report Mentor</h1>
+	<h1>Скарга на ментора</h1>
 	<p class="intro">
-		If you believe this mentor has violated community guidelines or behaved inappropriately, please report it here.
-		Your report is confidential and will be reviewed by our moderation team.
+		Якщо ви вважаєте, що цей ментор порушив правила спільноти або поводився неналежно — повідомте про це тут.
+		Ваша скарга є конфіденційною та буде розглянута модераційною командою.
 	</p>
 
 	{#if submitted}
-		<p class="submitted">✅ Your report has been submitted. Thank you.</p>
+		<p class="submitted">✅ Вашу скаргу надіслано. Дякуємо.</p>
 	{:else}
 		<form method="POST" transition:fly={{ y: 8, duration: 200 }}>
 			<input type="hidden" name="mentorUuid" value={mentorUuid} />
 
 			<div class="form-group">
-				<label for="reason">Reason for Reporting</label>
+				<label for="reason">Причина скарги</label>
 				<select id="reason" name="reason" bind:value={reason} required>
-					<option value="" disabled selected>Select a reason</option>
-					<option value="inappropriate">Inappropriate behavior</option>
-					<option value="spam">Spam or misleading information</option>
-					<option value="harassment">Harassment</option>
-					<option value="other">Other</option>
+					<option value="" disabled selected>Оберіть причину</option>
+					<option value="inappropriate">Неприйнятна поведінка</option>
+					<option value="spam">Спам або оманлива інформація</option>
+					<option value="harassment">Домагання</option>
+					<option value="other">Інше</option>
 				</select>
 			</div>
 
 			<div class="form-group">
-				<label for="details">Additional Details</label>
+				<label for="details">Деталі</label>
 				<textarea
 					id="message"
 					name="message"
 					rows="5"
-					placeholder="Please describe the issue with as much detail as possible..."
+					placeholder="Опишіть ситуацію якомога детальніше..."
 					bind:value={message}
 					required
 				></textarea>
 			</div>
 
-			<button type="submit" formaction="?/report" class="btn">🚨 Submit Report</button>
+			<button type="submit" formaction="?/report" class="btn">🚨 Надіслати скаргу</button>
 		</form>
 	{/if}
 </main>

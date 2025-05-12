@@ -8,6 +8,7 @@ export async function load({ cookies }) {
 			Authorization: `Bearer ${cookies.get('access_token')}`
 		}
 	});
+	console.log(specialities)
 
 	const data = await specialities.json();
 	return {
