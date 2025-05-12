@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LevelBadge from '$lib/components/LevelBadge.svelte';
 	import Stars from '$lib/components/Stars.svelte';
+	import explainer from "../mentorship/img.png"
 	const { data } = $props();
 
 	const state = $state({
@@ -113,10 +114,16 @@
 				<li><strong>Активність:</strong> заповнений профіль, активність у чаті та відповіді також враховуються.</li>
 				<li><strong>Досвід:</strong> чим довше ви з нами, тим більше впливає ваш досвід.</li>
 			</ul>
+			<img
+				src={explainer}
+				alt="Алгоритм розрахунку рейтингу ментора"
+				style="margin-top: 1rem; border-radius: 8px; max-width: 100%; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"
+			/>
 			<p>
 				Рейтинг оновлюється автоматично після нових відгуків. Якщо у вас є питання — не соромтесь звернутись до адміністрації!
 			</p>
 		</div>
+
 
 	{:else if state.role === 'ADMIN'}
 		<p class="subtitle">Запити менторів 📊</p>

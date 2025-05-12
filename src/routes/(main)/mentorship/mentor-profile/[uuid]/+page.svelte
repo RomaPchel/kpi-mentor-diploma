@@ -47,6 +47,11 @@
 	<a class="back-btn" href="/mentorship/find-mentor">&larr; Назад до менторів</a>
 
 	<div class="mentor-profile-card">
+		{#if data.mentor.stats.level}
+			<div class="level-badge-top-right">
+				<LevelBadge levelTitle={data.mentor.stats.levelTitle} level={data.mentor.stats.level} />
+			</div>
+		{/if}
 		<div class="profile-header">
 			<div class="header-top">
 				<h1>{data.mentor.name}</h1>
@@ -63,10 +68,16 @@
 		<div class="mentor-details">
 			<h2>
 				Спеціалізація: {data.mentor.specialization}
-				{#if data.mentor.stats.level}
-					<LevelBadge levelTitle={data.mentor.stats.levelTitle} level={data.mentor.stats.level} />
-				{/if}
+
 			</h2>
+
+			{#if data.mentor.badges?.length > 0}
+				<div class="mentor-badges">
+					{#each data.mentor.badges as badge}
+						<span class="badge-pill">{badge}</span>
+					{/each}
+				</div>
+			{/if}
 
 			{#if data.mentor.department}
 				<p><strong>Факультет:</strong> {data.mentor.department}</p>
@@ -294,6 +305,31 @@
 
     .mentor-bio {
         font-style: italic;
+    }
+
+    .mentor-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        justify-content: center;
+    }
+
+    .badge-pill {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        padding: 0.3rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .level-badge-top-right {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
     }
 
     .contact {
