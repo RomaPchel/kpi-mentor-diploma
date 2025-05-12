@@ -1,5 +1,6 @@
 <script lang="ts">
 	import locale from '$lib/locale.json';
+	import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 	const { data } = $props();
 
@@ -20,7 +21,8 @@
 			maxCreatedAt: '',
 		},
 		sortBy: 'createdAt',
-		sortOrder: 'asc',
+		sortOrder: 'desc',
+		token: data.token,
 	});
 
 	function createEvent() {
@@ -48,45 +50,30 @@
 		return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 	}
 
-	function applyFilters() {
-		let filteredEvents = data.events ?? [];
+	async function applyFilters() {
+		const params = new URLSearchParams();
+		console.log(state.filters);
+		if (state.filters.status) params.append('status', state.filters.status);
+		if (state.filters.minTimestamp) params.append('minTimestamp', new Date(state.filters.minTimestamp).getTime().toString());
+		if (state.filters.maxTimestamp) params.append('maxTimestamp', new Date(state.filters.maxTimestamp).getTime().toString());
+		if (state.filters.minCreatedAt) params.append('minCreatedAt', new Date(state.filters.minCreatedAt).getTime().toString());
+		if (state.filters.maxCreatedAt) params.append('maxCreatedAt', new Date(state.filters.maxCreatedAt).getTime().toString());
 
-		if (state.filters.status) {
-			filteredEvents = filteredEvents.filter(event => event.status === state.filters.status);
+		params.append('sortBy', state.sortBy);
+		params.append('sortOrder', state.sortOrder);
+		if (state.user.role === 'mentor') {
+			params.set('owner', state.user.uuid);
+		} else {
+			params.set('users', JSON.stringify([state.user.uuid]));
 		}
-
-		if (state.filters.minTimestamp) {
-			const minTimestamp = new Date(state.filters.minTimestamp).getTime();
-			filteredEvents = filteredEvents.filter(event => event.timestamp >= minTimestamp);
-		}
-		if (state.filters.maxTimestamp) {
-			const maxTimestamp = new Date(state.filters.maxTimestamp).getTime();
-			filteredEvents = filteredEvents.filter(event => event.timestamp <= maxTimestamp);
-		}
-
-		if (state.filters.minCreatedAt) {
-			const minCreatedAt = new Date(state.filters.minCreatedAt).getTime();
-			filteredEvents = filteredEvents.filter(event => event.createdAt >= minCreatedAt);
-		}
-
-		if (state.filters.maxCreatedAt) {
-			const maxCreatedAt = new Date(state.filters.maxCreatedAt).getTime();
-			filteredEvents = filteredEvents.filter(event => event.createdAt <= maxCreatedAt);
-		}
-
-		filteredEvents = filteredEvents.sort((a, b) => {
-			const orderMultiplier = state.sortOrder === 'asc' ? 1 : -1;
-			if (state.sortBy === 'status') {
-				return (a.status > b.status ? 1 : -1) * orderMultiplier;
-			} else if (state.sortBy === 'timestamp') {
-				return (a.timestamp - b.timestamp) * orderMultiplier;
-			} else if (state.sortBy === 'createdAt') {
-				return (a.createdAt - b.createdAt) * orderMultiplier;
+		const response = await fetch(`${PUBLIC_SERVER_URL}/api/events?${params.toString()}`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${state.token}`,
 			}
-			return 0;
-		});
-
-		state.events = filteredEvents;
+		})
+		const json = await response.json();
+		state.events = json;
 	}
 
 	function toggleSort(property: string) {
@@ -175,7 +162,7 @@
 	<div class="modal-backdrop" on:click={closeCreateModal}></div>
 	<div class="modal">
 		<h2>Нова зустріч</h2>
-		<form method="POST">
+		<form method="POST" >
 			<label>
 				<strong>Посилання:</strong>
 				<input name="url" type="text" required />
@@ -197,8 +184,8 @@
 			{/each}
 			<br />
 			<div class="actions">
-				<button class="create-form-button" type="submit" formaction="?/create">Create</button>
-				<button class="cancel-form-button" type="button" on:click={closeCreateModal}>Cancel</button>
+				<button class="create-form-button" type="submit" formaction="?/create">Створити</button>
+				<button class="cancel-form-button" type="button" on:click={closeCreateModal}>Назад</button>
 			</div>
 		</form>
 	</div>
@@ -250,7 +237,7 @@
 			{/each}
 			<br />
 			<div class="actions">
-				<button class="create-form-button" type="submit" formaction="?/update">Update</button>
+				<button class="edit-form-button" type="submit" formaction="?/update">Update</button>
 				<button class="cancel-form-button" type="button" on:click={closeEditModal}>Cancel</button>
 			</div>
 		</form>
@@ -314,6 +301,16 @@
         font-weight: bold;
     }
     .create-form-button {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .edit-form-button {
         background-color: #0077cc;
         color: white;
         border: none;
