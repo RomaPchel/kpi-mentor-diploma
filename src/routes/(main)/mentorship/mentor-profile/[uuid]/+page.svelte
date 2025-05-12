@@ -237,6 +237,18 @@
         color: #333;
     }
 
+    .approve {
+        background-color: #0077cc;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
     .submit-btn {
         margin-top: 1rem;
         width: 100%;
