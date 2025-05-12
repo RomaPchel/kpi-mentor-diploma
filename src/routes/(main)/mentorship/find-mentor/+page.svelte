@@ -146,6 +146,7 @@
 				<section class="highlight-and-leaderboard">
 
 					<div class="card-pick highlight">
+
 						<div class="level-badge">
 							<LevelBadge levelTitle={ourPickMentor.stats.levelTitle} level={ourPickMentor.stats.level} />
 						</div>
@@ -185,7 +186,7 @@
 										<span class="rank">#{i + 1}</span>
 										<img src={m.avatar || placeholderAvatar} alt="avatar" />
 										<div>
-											<strong>{m.name}</strong>
+											<a href="/mentorship/mentor-profile/{m.mentorUuid}" style="text-decoration:none;color: black"> <strong>{m.name}</strong></a>
 											<div class="score">{m.rating?.toFixed(2)} ★</div>
 										</div>
 									</li>
@@ -296,7 +297,7 @@
         background: #f8fafc;
         border: 1px solid #e5e7eb;
         border-radius: 0.75rem;
-        padding: 1rem;
+        padding: 2rem;
     }
 
     .leaderboard h2 {

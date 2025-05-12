@@ -22,6 +22,7 @@ export const actions: Actions = {
 			body: JSON.stringify({ message, anonymous })
 		});
 
+		console.log(res)
 		if (!res.ok) {
 			return fail(res.status, { message: 'Failed to submit feedback' });
 		}

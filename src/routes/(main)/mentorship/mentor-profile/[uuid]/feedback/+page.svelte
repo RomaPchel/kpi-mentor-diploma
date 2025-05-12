@@ -34,7 +34,6 @@
 					<option value="" disabled selected>Оберіть причину</option>
 					<option value="inappropriate">Неприйнятна поведінка</option>
 					<option value="spam">Спам або оманлива інформація</option>
-					<option value="harassment">Домагання</option>
 					<option value="other">Інше</option>
 				</select>
 			</div>

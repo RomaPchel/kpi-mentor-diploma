@@ -24,9 +24,9 @@ export const load: PageServerLoad = async ({ locals, cookies, params }) => {
 	const requestRes = await fetch(`${PUBLIC_SERVER_URL}/api/mentees/already-requested/${mentorData.mentorUuid}`, {
 		headers: { Authorization: `Bearer ${accessToken}` }
 	});
+	console.log(requestRes)
 	if (requestRes.ok) {
-		const { requested } = await requestRes.json();
-		alreadyRequested = requested;
+		alreadyRequested = true;
 	}
 
 	// Check if mentor is in mentee's list
@@ -80,7 +80,7 @@ export const actions = {
 			};
 		}
 
-		return redirect(303, '/mentorship/requests');
+		return {success: true};
 	},
 	rate: async ({ request, cookies }) => {
 		const clonedRequest = request.clone();

@@ -7,7 +7,7 @@
 	const state = $state({
 		user: data.user,
 		role: data.role,
-		availableMentors: data.availableMentors ?? [],
+		availableMentors: data.availableMentors?.slice(0, 4) ?? [],
 		activeMentors: data.activeMentors ?? [],
 		stats: data.stats ?? null,
 		allRequests: data.allRequests ?? [],

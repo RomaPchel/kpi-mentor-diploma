@@ -38,7 +38,7 @@
 		}
 	};
 
-	const alreadyRequested = data.alreadyRequested;
+	let alreadyRequested = data.alreadyRequested;
 	const alreadyMyMentor = data.alreadyMyMentor;
 	const alreadyRated = data.alreadyRated;
 </script>
@@ -115,7 +115,7 @@
 
 			{#if alreadyMyMentor && !alreadyRated}
 				{#if !showRatingForm}
-					<button class="btn" onclick={() => (showRatingForm = true)}>
+					<button class="btn" onclick={() => {showRatingForm = true; alreadyRequested = true}}>
 						Оцінити ментора
 					</button>
 				{:else}
